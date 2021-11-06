@@ -136,7 +136,7 @@ public class frmModProveedor extends JDialog implements MouseListener, MouseMoti
 		textField_1.setBounds(190, 105, 168, 26);
 		panel_1.add(textField_1);
 		
-		lblTelefono = new JLabel("Telefono 1:");
+		lblTelefono = new JLabel("Direccion:");
 		lblTelefono.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		lblTelefono.setBounds(48, 145, 96, 27);
 		panel_1.add(lblTelefono);
@@ -147,7 +147,7 @@ public class frmModProveedor extends JDialog implements MouseListener, MouseMoti
 		textField_2.setBounds(190, 142, 168, 29);
 		panel_1.add(textField_2);
 		
-		lblTelefono_1 = new JLabel("Telefono 2:");
+		lblTelefono_1 = new JLabel("Telefono:");
 		lblTelefono_1.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		lblTelefono_1.setBounds(48, 183, 96, 24);
 		panel_1.add(lblTelefono_1);
