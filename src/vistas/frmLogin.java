@@ -9,9 +9,16 @@ import javax.swing.border.EmptyBorder;
 
 import org.w3c.dom.css.RGBColor;
 
+import controlador.GestionUsuarioDAO;
+import entidad.Usuario;
+import utils.Validacion;
+
+
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -37,11 +44,9 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 	private JPanel panel;
 	int xmouse, ymouse; //globales para almacenar direccion x  e y
 	private JLabel lblNewLabel;
-	private JTextField txt_Usuario;
 	private JSeparator separator;
 	private JLabel lblContrasea;
 	private JSeparator separator_1;
-	private JPasswordField txt_Contraseña;
 	private JLabel lblUser;
 	private JLabel lblContra;
 	private JPanel pn_Entrar;
@@ -51,6 +56,10 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 	private JLabel lbl_Ver;
 	private JLabel lbl_NoVer;
 	private JLabel label;
+	GestionUsuarioDAO gu=new GestionUsuarioDAO();
+	public static Usuario u=new Usuario();
+	private JTextField txtU;
+	private JPasswordField txt_Contraseña;
 	/**
 	 * Launch the application.
 	 */
@@ -94,18 +103,6 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		lblNewLabel.setForeground(new Color(193, 18, 5));
 		panel.add(lblNewLabel);
 		
-		txt_Usuario = new JTextField();
-		txt_Usuario.setEditable(false);
-		txt_Usuario.addMouseListener(this);
-		txt_Usuario.setForeground(Color.LIGHT_GRAY);
-		txt_Usuario.setText("Ingrese Nombre de Usuario");
-		txt_Usuario.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
-		txt_Usuario.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.TEXT_CURSOR));
-		txt_Usuario.setBounds(137, 221, 238, 31);
-		txt_Usuario.setBorder(null);
-		panel.add(txt_Usuario);
-		txt_Usuario.setColumns(10);
-		
 		separator = new JSeparator();
 		separator.setBounds(137, 251, 238, 9);
 		separator.setBackground(new Color(193, 18, 5));
@@ -121,17 +118,6 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		separator_1.setBounds(137, 334, 238, 9);
 		separator_1.setBackground(new Color(193, 18, 5));
 		panel.add(separator_1);
-		
-		txt_Contraseña = new JPasswordField();
-		txt_Contraseña.setEditable(false);
-		txt_Contraseña.addMouseListener(this);
-		txt_Contraseña.setForeground(Color.LIGHT_GRAY);
-		txt_Contraseña.setFont(new Font("Arial", Font.PLAIN, 16));
-		txt_Contraseña.setBounds(137, 302, 238, 31);
-		txt_Contraseña.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.TEXT_CURSOR));
-		txt_Contraseña.setBorder(null);
-		txt_Contraseña.setText("*********");
-		panel.add(txt_Contraseña);
 		
 		lblUser = new JLabel("");
 		lblUser.setBounds(95, 221, 32, 31);
@@ -208,6 +194,21 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		ImageIcon imgLogLogin = new ImageIcon(icoLogLogin.getImage().getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH));
 		label.setIcon(imgLogLogin);
 		panel.add(label);
+		
+		txtU = new JTextField();
+		txtU.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+		txtU.setBorder(null);
+		txtU.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 16));
+		txtU.setBounds(137, 220, 238, 31);
+		panel.add(txtU);
+		txtU.setColumns(10);
+		
+		txt_Contraseña = new JPasswordField();
+		txt_Contraseña.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+		txt_Contraseña.setBorder(null);
+		txt_Contraseña.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 16));
+		txt_Contraseña.setBounds(137, 303, 238, 31);
+		panel.add(txt_Contraseña);
 		setUndecorated(true); //para quitar la barrera minimizar y cerrar 
 	}
 	public void mouseClicked(MouseEvent arg0) {
@@ -222,12 +223,6 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		}	
 		if (arg0.getSource() == pn_Entrar) {
 			mouseClickedPnEntrar(arg0);
-		}	
-		if (arg0.getSource() == txt_Contraseña) {
-			mouseClickedTxt_Contraseña(arg0);
-		}
-		if (arg0.getSource() == txt_Usuario) {
-			mouseClickedTxtIngreseNombreDe(arg0);
 		}
 	}
 
@@ -255,21 +250,11 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		
 		this.setLocation(x - xmouse, y - ymouse);
 	}
-	protected void mouseClickedTxtIngreseNombreDe(MouseEvent arg0) {
-		txt_Usuario.setText("");
-		txt_Usuario.setEditable(true);
-		txt_Usuario.setForeground(Color.BLACK);
-	}
-	protected void mouseClickedTxt_Contraseña(MouseEvent arg0) {
-		txt_Contraseña.setText("");
-		txt_Contraseña.setEditable(true);
-		txt_Contraseña.setForeground(Color.BLACK);
-	}
 	protected void mouseClickedPnCerrar(MouseEvent arg0) {
 		this.dispose();
 	}
 	protected void mouseClickedPnEntrar(MouseEvent arg0) {
-		JOptionPane.showMessageDialog(this, "ENTRO");
+		login(leerUsuario(),leerClave());
 	}
 	protected void mouseClickedLbl_Ver(MouseEvent arg0) {
 		lbl_Ver.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR)); //cursor de mano al click
@@ -301,5 +286,44 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+	private void login(String usr, String psw){
+		u = gu.login(usr, psw);
+		if(u!=null){
+			mensaje("¡ Bienvenido " + u.getNombre()+" !");
+			frmPrincipalEmp pri = new frmPrincipalEmp();
+			pri.setVisible(true);
+			pri.setLocationRelativeTo(this);
+			this.dispose();
+			
+		}else{
+			mensaje("Datos invalidos");
+		}
+	}
+	private void mensaje(String string) {
+		JOptionPane.showMessageDialog(null, string);
+		
+	}
+
+	private String leerUsuario(){
+		String user=null;
+		if(txtU.getText().trim().length()==0){
+			alerta("Campo usuario vacio !");
+		}else{
+			user = txtU.getText().trim();
+		}
+		return user;
+	}
+	private String leerClave(){
+		String clave=null;
+		if(String.valueOf(txt_Contraseña.getPassword()).trim().length()==0){
+			alerta("Campo clave vacio !");
+		}else{
+			clave=String.valueOf(txt_Contraseña.getPassword()).trim();
+		}
+		return clave;
+	}
+	private void alerta(String s){
+		JOptionPane.showMessageDialog(null, s,"Alerta",2);
 	}
 }

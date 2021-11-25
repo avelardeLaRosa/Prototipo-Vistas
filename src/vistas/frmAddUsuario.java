@@ -11,6 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 
@@ -18,10 +20,24 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.ImageIcon;
 import com.toedter.calendar.JDateChooser;
+
+import controlador.GestionUsuarioDAO;
+import entidad.Usuario;
+import utils.Validacion;
+
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.ColorConvertOp;
+import java.util.ArrayList;
 
-public class frmAddUsuario extends JDialog implements MouseListener {
+import javax.swing.JPasswordField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+
+public class frmAddUsuario extends JDialog implements MouseListener, MouseMotionListener, ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JPanel panel;
@@ -34,13 +50,15 @@ public class frmAddUsuario extends JDialog implements MouseListener {
 	private JLabel lblClave;
 	private JLabel lblFechaRegistro;
 	private JButton button;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
+	private JTextField txtUsuario;
+	private JTextField txtApellido;
+	private JTextField txtNombre;
+	private JTextField txtCodigo;
 	private JLabel label_7;
-	private JDateChooser dateChooser;
+	int xMouse,yMouse;
+	private JPasswordField pswClave;
+	GestionUsuarioDAO gu=new GestionUsuarioDAO();
+	private JComboBox cboTipo;
 
 	/**
 	 * Launch the application.
@@ -73,6 +91,8 @@ public class frmAddUsuario extends JDialog implements MouseListener {
 		panel.setLayout(null);
 		
 		panel_1 = new JPanel();
+		panel_1.addMouseMotionListener(this);
+		panel_1.addMouseListener(this);
 		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_1.setBounds(10, 0, 430, 350);
 		panel.add(panel_1);
@@ -109,47 +129,46 @@ public class frmAddUsuario extends JDialog implements MouseListener {
 		lblClave.setBounds(26, 225, 96, 26);
 		panel_1.add(lblClave);
 		
-		lblFechaRegistro = new JLabel("Fecha Registro:");
+		lblFechaRegistro = new JLabel("Tipo:");
 		lblFechaRegistro.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		lblFechaRegistro.setBounds(26, 262, 118, 26);
 		panel_1.add(lblFechaRegistro);
 		
 		button = new JButton("GUARDAR");
+		button.addActionListener(this);
 		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		button.setIcon(new ImageIcon(frmAddUsuario.class.getResource("/img/Accept256_25070.png")));
 		button.setFont(new Font("Roboto Medium", Font.PLAIN, 14));
 		button.setBounds(129, 304, 158, 35);
 		panel_1.add(button);
 		
-		textField_1 = new JTextField();
-		textField_1.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_1.setColumns(10);
-		textField_1.setBounds(190, 225, 168, 26);
-		panel_1.add(textField_1);
+		txtUsuario = new JTextField();
+		txtUsuario.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtUsuario.setColumns(10);
+		txtUsuario.setBounds(190, 190, 168, 26);
+		panel_1.add(txtUsuario);
 		
-		textField_2 = new JTextField();
-		textField_2.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_2.setColumns(10);
-		textField_2.setBounds(190, 190, 168, 26);
-		panel_1.add(textField_2);
+		txtApellido = new JTextField();
+		txtApellido.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtApellido.setColumns(10);
+		txtApellido.setBounds(190, 152, 168, 26);
+		panel_1.add(txtApellido);
 		
-		textField_3 = new JTextField();
-		textField_3.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_3.setColumns(10);
-		textField_3.setBounds(190, 152, 168, 26);
-		panel_1.add(textField_3);
+		txtNombre = new JTextField();
+		txtNombre.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtNombre.setColumns(10);
+		txtNombre.setBounds(190, 112, 168, 26);
+		panel_1.add(txtNombre);
 		
-		textField_4 = new JTextField();
-		textField_4.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_4.setColumns(10);
-		textField_4.setBounds(190, 112, 168, 26);
-		panel_1.add(textField_4);
-		
-		textField_5 = new JTextField();
-		textField_5.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_5.setColumns(10);
-		textField_5.setBounds(190, 75, 168, 26);
-		panel_1.add(textField_5);
+		txtCodigo = new JTextField();
+		txtCodigo.setHorizontalAlignment(SwingConstants.CENTER);
+		txtCodigo.setEditable(false);
+		txtCodigo.setForeground(Color.DARK_GRAY);
+		txtCodigo.setText("AUTOGENERADO");
+		txtCodigo.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtCodigo.setColumns(10);
+		txtCodigo.setBounds(190, 75, 168, 26);
+		panel_1.add(txtCodigo);
 		
 		label_7 = new JLabel("");
 		label_7.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -161,9 +180,15 @@ public class frmAddUsuario extends JDialog implements MouseListener {
 		label_7.setIcon(imgCerrar);
 		panel_1.add(label_7);
 		
-		dateChooser = new JDateChooser();
-		dateChooser.setBounds(190, 262, 166, 26);
-		panel_1.add(dateChooser);
+		pswClave = new JPasswordField();
+		pswClave.setBounds(190, 225, 168, 26);
+		panel_1.add(pswClave);
+		
+		cboTipo = new JComboBox();
+		cboTipo.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 14));
+		cboTipo.setModel(new DefaultComboBoxModel(new String[] {"Seleccione Tipo", "Administrador", "Cajero"}));
+		cboTipo.setBounds(190, 267, 158, 21);
+		panel_1.add(cboTipo);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
 	}
@@ -177,10 +202,126 @@ public class frmAddUsuario extends JDialog implements MouseListener {
 	public void mouseExited(MouseEvent arg0) {
 	}
 	public void mousePressed(MouseEvent arg0) {
+		if (arg0.getSource() == panel_1) {
+			mousePressedPanel_1(arg0);
+		}
 	}
 	public void mouseReleased(MouseEvent arg0) {
 	}
 	protected void mouseClickedLabel_7(MouseEvent arg0) {
 		this.dispose();
+	}
+	protected void mousePressedPanel_1(MouseEvent arg0) {
+		xMouse = arg0.getX();
+		yMouse = arg0.getY();
+	}
+	public void mouseDragged(MouseEvent e) {
+		if (e.getSource() == panel_1) {
+			mouseDraggedPanel_1(e);
+		}
+	}
+	public void mouseMoved(MouseEvent e) {
+	}
+	protected void mouseDraggedPanel_1(MouseEvent e) {
+		int x = e.getXOnScreen();
+		int y = e.getYOnScreen();
+		this.setLocation(x-xMouse, y-yMouse);
+	}
+	String leerNombre(){
+		String nombre=null;
+		if(txtNombre.getText().trim().length()==0){
+			alerta("Campo Nombre Vacio");}
+		else if(txtNombre.getText().trim().matches(Validacion.nomApell)==false){
+			alerta("El nombre debe tener de 3 - 25 carateres !");
+		}else{
+			nombre = txtNombre.getText().trim();
+		}
+		return nombre;
+	}
+	String leerApellido(){
+		String apellido=null;
+		if(txtApellido.getText().trim().length()==0){
+			alerta("Campo Apellido Vacio");
+		}else if(txtApellido.getText().trim().matches(Validacion.nomApell)==false){
+			alerta("El apellido debe tener de 3 - 25 caracteres !");
+		}else{
+			apellido = txtApellido.getText().trim();
+		}
+		return apellido;
+	}
+	String leerUsuario(){
+		String usuario=null;
+		if(txtUsuario.getText().trim().length()==0){
+			alerta("Campo Usuario Vacio");
+		}else{
+			usuario=txtUsuario.getText().trim();
+		}
+		return usuario;
+	}
+	String leerClave(){
+		String clave=null;
+		if(String.valueOf(pswClave.getPassword()).trim().length()==0){
+			alerta("Campo Contraseña Vacio");
+		}else if(String.valueOf(pswClave.getPassword()).trim().matches(Validacion.psw)==false){
+			alerta("Formato Incorrecto ejm.: A12345");
+		}else{
+			clave = String.valueOf(pswClave.getPassword());
+		}
+		return clave;
+	}
+	int leerTipo(){
+		int tipo=0;
+		if(cboTipo.getSelectedIndex()==0){
+			alerta("Selecicone Tipo de usuario!");
+		}else{
+			tipo = cboTipo.getSelectedIndex();
+		}
+		return tipo;
+	}
+	
+	void alerta(String s){
+		JOptionPane.showMessageDialog(null,s,"ALERTA",1);
+	}
+	void mensaje(String s){
+		JOptionPane.showMessageDialog(null, s);
+	}
+	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == button) {
+			actionPerformedButton(arg0);
+		}
+	}
+	protected void actionPerformedButton(ActionEvent arg0) {
+		/*REGISTRAR*/
+		registrarUsuario();
+		limpiarCampos();
+	}
+	void registrarUsuario(){
+		String nom = leerNombre(),apell = leerApellido(),user = leerUsuario(),psw = leerClave();
+		int tip = leerTipo();
+		if(nom==null||apell==null||user==null||psw==null||tip==0){
+			alerta("No se registraron los datos");
+		}else{
+			Usuario u=new Usuario();
+			u.setNombre(nom);
+			u.setApellido(apell);
+			u.setUsuario(user);
+			u.setClave(psw);
+			u.setIdtipo(tip);
+			int ok = gu.registrar(u);
+			if(ok==0){
+				alerta("Error en el registro");
+			}else{
+				mensaje("Registro Exitoso");
+			}
+		}
+		
+	}
+	void limpiarCampos(){
+		txtNombre.setText("");
+		txtApellido.setText("");
+		txtUsuario.setText("");
+		pswClave.setText("");
+		//
+		txtNombre.requestFocus();
 	}
 }

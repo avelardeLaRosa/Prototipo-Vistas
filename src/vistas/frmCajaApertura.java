@@ -12,8 +12,18 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+
 import javax.swing.border.LineBorder;
+
+import controlador.GestionCajaDAO;
+import entidad.Caja;
+import entidad.Producto;
+import entidad.Usuario;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 
@@ -22,8 +32,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class frmCajaApertura extends JDialog implements MouseListener, MouseMotionListener {
+public class frmCajaApertura extends JDialog implements MouseListener, MouseMotionListener, ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	int xMouse,yMouse;
@@ -32,12 +44,14 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 	private JLabel label_1;
 	private JLabel lblEntrada;
 	private JLabel lblCantidad;
-	private JTextField textField;
+	private JTextField txtCantidad;
 	private JLabel lblComentarios;
-	private JScrollPane scrollPane;
-	private JTextArea textArea;
 	private JButton btnGuardar;
 	private JButton btnCancelar;
+	private JLabel lblNewLabel;
+	GestionCajaDAO gc=new GestionCajaDAO();
+	private JTextField txtInfo;
+	private JButton btnIngresar;
 
 	/**
 	 * Launch the application.
@@ -98,25 +112,19 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 		lblCantidad.setBounds(10, 105, 96, 29);
 		panel_1.add(lblCantidad);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField.setColumns(10);
-		textField.setBounds(10, 145, 168, 26);
-		panel_1.add(textField);
+		txtCantidad = new JTextField();
+		txtCantidad.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtCantidad.setColumns(10);
+		txtCantidad.setBounds(66, 145, 87, 26);
+		panel_1.add(txtCantidad);
 		
 		lblComentarios = new JLabel("COMENTARIOS:");
 		lblComentarios.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		lblComentarios.setBounds(10, 192, 168, 29);
 		panel_1.add(lblComentarios);
 		
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 232, 256, 85);
-		panel_1.add(scrollPane);
-		
-		textArea = new JTextArea();
-		scrollPane.setViewportView(textArea);
-		
 		btnGuardar = new JButton("Guardar");
+		btnGuardar.addActionListener(this);
 		btnGuardar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnGuardar.setIcon(new ImageIcon(frmCajaApertura.class.getResource("/img/Accept256_25070.png")));
 		btnGuardar.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
@@ -124,13 +132,34 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 		panel_1.add(btnGuardar);
 		
 		btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(this);
 		btnCancelar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnCancelar.setIcon(new ImageIcon(frmCajaApertura.class.getResource("/img/delete_unapprove_discard_remove_x_red_icon-icons.com_55984.png")));
 		btnCancelar.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
 		btnCancelar.setBounds(306, 208, 141, 43);
 		panel_1.add(btnCancelar);
+		
+		lblNewLabel = new JLabel("S/.");
+		lblNewLabel.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setBounds(10, 145, 46, 26);
+		panel_1.add(lblNewLabel);
+		
+		txtInfo = new JTextField();
+		txtInfo.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
+		txtInfo.setBounds(10, 232, 182, 26);
+		panel_1.add(txtInfo);
+		txtInfo.setColumns(10);
+		
+		btnIngresar = new JButton("INGRESAR");
+		btnIngresar.addActionListener(this);
+		btnIngresar.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
+		btnIngresar.setBounds(306, 68, 141, 43);
+		panel_1.add(btnIngresar);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
+		mostrarMontoApertura();
+		habilitar(false);
 	}
 
 	public void mouseClicked(MouseEvent arg0) {
@@ -167,6 +196,101 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 	}
 	
 	protected void mouseClickedLabel_1(MouseEvent arg0) {
+		this.dispose();
+	}
+	private double leerCantidad(){
+		double cantidad=0;
+		try {
+			if(txtCantidad.getText().trim().length()==0){
+				alerta("Debe ingresar Cantidad de Apertura");
+			}else{
+				cantidad = Double.parseDouble(txtCantidad.getText().trim());
+			}
+		} catch (Exception e) {
+			alerta("Formato incorrecto !!");
+		}
+		return cantidad;
+	}
+
+	private void alerta(String string) {
+		JOptionPane.showMessageDialog(null,string,"ALERTA",2);
+		
+	}
+	private void mostrarMontoApertura(){
+		Caja c=gc.listarMonto();
+		if(c==null){
+			alerta("No se ingreso Monto!");
+		}else{
+			txtCantidad.setText(String.valueOf(c.getMonto()));
+			txtInfo.setText(c.getComentario());
+		}
+	}
+	private double leerMonto(){
+		double monto=0;
+		try{
+		if(txtCantidad.getText().trim().length()==0){
+			alerta("Debe ingresar Monto de apertura");
+		}else{
+			monto = Double.parseDouble(txtCantidad.getText().trim());
+		}}catch(NumberFormatException e){
+			alerta("Formato incorrecto");
+		}
+		return monto;
+	}
+	private String leerComentario(){
+		String coment=null;
+		if(txtInfo.getText().trim().length()==0){
+			alerta("Debe ingresarse un comentario");
+		}else{
+			coment = txtInfo.getText().trim();
+		}
+		return coment;
+	}
+	private void modificarMonto(){
+		double monto=leerCantidad();
+		String comentario=leerComentario();
+		
+		if(monto==0||comentario==null){
+			alerta("No se ingreso monto");
+		}else{
+			Caja c=new Caja();
+			c.setMonto(monto);
+			c.setComentario(comentario);
+			int ok = gc.actualizarMonto(c);
+			if(ok==0){
+				alerta("Error al actualizar usuario !");
+			}else{
+				mensaje("Actualizacion Exitosa !");
+				habilitar(false);
+			}	
+		}
+	}
+	private void mensaje(String s){
+		JOptionPane.showMessageDialog(null, s);
+	}
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnCancelar) {
+			actionPerformedBtnCancelar(e);
+		}
+		if (e.getSource() == btnIngresar) {
+			actionPerformedBtnIngresar(e);
+		}
+		if (e.getSource() == btnGuardar) {
+			actionPerformedBtnGuardar(e);
+		}
+	}
+	protected void actionPerformedBtnGuardar(ActionEvent e) {
+		modificarMonto();
+	}
+	private void habilitar(boolean tof){
+		txtCantidad.setEditable(tof);
+		txtInfo.setEditable(tof);
+	}
+	protected void actionPerformedBtnIngresar(ActionEvent e) {
+		habilitar(true);
+		txtCantidad.requestFocus();
+	}
+	protected void actionPerformedBtnCancelar(ActionEvent e) {
 		this.dispose();
 	}
 }

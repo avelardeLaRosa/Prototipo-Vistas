@@ -10,7 +10,15 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
+
+import controlador.GestionUsuarioDAO;
+import entidad.Usuario;
+import entidad.UsuarioXTipo;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 
@@ -23,8 +31,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTable;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 
-public class frmUsuarios extends JDialog implements MouseListener, ActionListener {
+public class frmUsuarios extends JDialog implements MouseListener, ActionListener, KeyListener, MouseMotionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JPanel panel;
@@ -34,7 +47,7 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 	private JScrollPane scrollPane;
 	private Button button;
 	private JLabel label_2;
-	private JTextField textField;
+	private JTextField txtCodigo;
 	private JLabel label_3;
 	private JLabel label_4;
 	private Button button_1;
@@ -42,7 +55,10 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 	private JLabel label_5;
 	private JLabel label_6;
 	private Button button_3;
-
+	DefaultTableModel model=new DefaultTableModel();
+	GestionUsuarioDAO gu=new GestionUsuarioDAO();
+	private JTable tbUsuario;
+	int xMouse,yMouse;
 	/**
 	 * Launch the application.
 	 */
@@ -67,6 +83,9 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 		contentPanel.setLayout(null);
 		
 		panel = new JPanel();
+		panel.addMouseMotionListener(this);
+		panel.addMouseListener(this);
+		panel.addKeyListener(this);
 		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel.setBounds(0,0,687,480);
 		panel.setBackground(Color.WHITE);
@@ -97,7 +116,24 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 		scrollPane.setBounds(0, 35, 687, 268);
 		panel_1.add(scrollPane);
 		
+		tbUsuario = new JTable(){
+			private static final long serialVersionUID = 1L;
+			public boolean isCellEditable(int rowIndex,int columnIndex){
+				return false;}
+		};
+		model.addColumn("ID Usuario");
+		model.addColumn("Nombre");
+		model.addColumn("Apellido");
+		model.addColumn("Usuario");
+		model.addColumn("Clave");
+		model.addColumn("Fecha Registro");
+		model.addColumn("Tipo");
+		tbUsuario.setModel(model);
+		
+		scrollPane.setViewportView(tbUsuario);
+		
 		button = new Button("Actualizar Tabla");
+		button.addActionListener(this);
 		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		button.setFont(new Font("Roboto Medium", Font.BOLD, 14));
 		button.setBounds(252, 309, 177, 22);
@@ -109,13 +145,14 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 		label_2.setBounds(10, 10, 177, 14);
 		panel_1.add(label_2);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
-		textField.setColumns(10);
-		textField.setBounds(197, 10, 188, 19);
-		panel_1.add(textField);
+		txtCodigo = new JTextField();
+		txtCodigo.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
+		txtCodigo.setColumns(10);
+		txtCodigo.setBounds(197, 10, 188, 19);
+		panel_1.add(txtCodigo);
 		
 		label_3 = new JLabel("");
+		label_3.addMouseListener(this);
 		label_3.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		label_3.setBounds(395, 10, 30, 22);
 		ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
@@ -165,8 +202,12 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 		panel.add(button_3);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
+		listarUsuario();
 	}
 	public void mouseClicked(MouseEvent e) {
+		if (e.getSource() == label_3) {
+			mouseClickedLabel_3(e);
+		}
 		if (e.getSource() == label_1) {
 			mouseClickedLabel_1(e);
 		}
@@ -176,6 +217,9 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 	public void mouseExited(MouseEvent e) {
 	}
 	public void mousePressed(MouseEvent e) {
+		if (e.getSource() == panel) {
+			mousePressedPanel(e);
+		}
 	}
 	public void mouseReleased(MouseEvent e) {
 	}
@@ -186,6 +230,9 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 		this.dispose();
 	}
 	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == button) {
+			actionPerformedButton(arg0);
+		}
 		if (arg0.getSource() == button_3) {
 			actionPerformedButton_3(arg0);
 		}
@@ -210,5 +257,100 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 		frmEliminarUsuario elimUser=new frmEliminarUsuario();
 		elimUser.setVisible(true);
 		elimUser.setLocationRelativeTo(null);
+	}
+	void listarUsuario(){
+		ArrayList<UsuarioXTipo>listar=gu.listarUsuario();
+		model.setRowCount(0);
+		if(listar.size()==0){
+			error("Lista Vacia");
+		}else{
+			for(UsuarioXTipo ut:listar){
+				Object[]fila={
+						ut.getIdUsuario(),
+						ut.getNombre(),
+						ut.getApellido(),
+						ut.getUsuario(),
+						ut.getClave(),
+						ut.getFecha_registro(),
+						ut.getDes_tipo()
+				};
+				model.addRow(fila);
+			}
+		}
+	}
+	void error(String cad){
+		JOptionPane.showMessageDialog(null, cad,"ERROR",2);
+	}
+	public void keyPressed(KeyEvent arg0) {
+		if (arg0.getSource() == panel) {
+			keyPressedPanel(arg0);
+		}
+	}
+	public void keyReleased(KeyEvent arg0) {
+	}
+	public void keyTyped(KeyEvent arg0) {
+	}
+	protected void keyPressedPanel(KeyEvent arg0) {
+		
+	}
+	protected void mousePressedPanel(MouseEvent e) {
+		xMouse = e.getX();
+		yMouse = e.getY();
+	}
+	public void mouseDragged(MouseEvent arg0) {
+		if (arg0.getSource() == panel) {
+			mouseDraggedPanel(arg0);
+		}
+	}
+	public void mouseMoved(MouseEvent arg0) {
+	}
+	protected void mouseDraggedPanel(MouseEvent arg0) {
+		int x = arg0.getXOnScreen();
+		int y = arg0.getYOnScreen();
+		this.setLocation(x-xMouse, y-yMouse);
+	}
+	protected void actionPerformedButton(ActionEvent arg0) {
+		//ACTUALIZAR TABLA
+		listarUsuario();
+	}
+	void listarXId(int id){
+		model.setRowCount(0);
+		ArrayList<Usuario>listar = gu.listarXId(id);
+		if(listar.size()==0){
+			alerta("Usuario no Existe");
+		}else{
+			for(Usuario u: listar){
+			Object[] fila={
+					u.getIdUsuario(),
+					u.getNombre(),
+					u.getApellido(),
+					u.getUsuario(),
+					u.getClave(),
+					u.getFecha_registro(),
+					u.getIdtipo(),
+			};
+			model.addRow(fila);
+		}
+			}
+	}
+	void alerta(String s){
+		JOptionPane.showMessageDialog(null,s,"Alerta",2);
+	}
+	int leerId(){
+		int id=0;
+		try{
+		if(txtCodigo.getText().trim().length()==0){
+			alerta("Campo Codigo Vacio");}
+		else{
+			id = Integer.parseInt(txtCodigo.getText().trim());
+		}
+		}catch(NumberFormatException e){
+			alerta("Solo se aceptan numeros");
+		}
+		return id;
+	}
+	protected void mouseClickedLabel_3(MouseEvent e) {
+		/*LISTAR X ID USUARIO*/
+		listarXId(leerId());
 	}
 }

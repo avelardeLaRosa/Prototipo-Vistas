@@ -12,8 +12,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
 import javax.swing.border.LineBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 
@@ -22,7 +28,13 @@ import javax.swing.JTextField;
 import javax.swing.ImageIcon;
 import com.toedter.calendar.JDateChooser;
 
-public class frmModUsuario extends JDialog implements MouseListener, MouseMotionListener {
+import controlador.GestionUsuarioDAO;
+import entidad.Usuario;
+import utils.Validacion;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class frmModUsuario extends JDialog implements MouseListener, MouseMotionListener, ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JPanel panel;
@@ -31,20 +43,21 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 	private JLabel lblModificaUsuario;
 	private JPanel panel_2;
 	private JLabel lblCodigoDeUsuario;
-	private JTextField textField;
+	private JTextField txtCodigo;
 	private JLabel label_2;
 	private JLabel label_3;
 	private JButton button;
 	private JLabel label;
-	private JTextField textField_1;
+	private JTextField txtNombre;
 	private JLabel label_1;
-	private JTextField textField_2;
+	private JTextField txtApellido;
 	private JLabel label_4;
-	private JTextField textField_3;
+	private JTextField txtUsuario;
 	private JLabel label_5;
-	private JTextField textField_4;
+	private JTextField txtClave;
 	private JLabel label_6;
-	private JDateChooser dateChooser;
+	private JDateChooser dcFecha;
+	GestionUsuarioDAO gu=new GestionUsuarioDAO();
 	/**
 	 * Launch the application.
 	 */
@@ -100,13 +113,14 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		lblCodigoDeUsuario.setBounds(10, 11, 162, 26);
 		panel_2.add(lblCodigoDeUsuario);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField.setColumns(10);
-		textField.setBounds(179, 12, 168, 26);
-		panel_2.add(textField);
+		txtCodigo = new JTextField();
+		txtCodigo.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtCodigo.setColumns(10);
+		txtCodigo.setBounds(179, 12, 168, 26);
+		panel_2.add(txtCodigo);
 		
 		label_2 = new JLabel("");
+		label_2.addMouseListener(this);
 		label_2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		label_2.setBounds(357, 11, 31, 29);
 		ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
@@ -125,6 +139,7 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		panel_1.add(label_3);
 		
 		button = new JButton("GUARDAR CAMBIOS");
+		button.addActionListener(this);
 		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		button.setFont(new Font("Roboto Medium", Font.PLAIN, 14));
 		button.setBounds(132, 298, 188, 41);
@@ -135,58 +150,61 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		label.setBounds(20, 108, 96, 29);
 		panel_1.add(label);
 		
-		textField_1 = new JTextField();
-		textField_1.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_1.setColumns(10);
-		textField_1.setBounds(184, 108, 168, 26);
-		panel_1.add(textField_1);
+		txtNombre = new JTextField();
+		txtNombre.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtNombre.setColumns(10);
+		txtNombre.setBounds(184, 108, 168, 26);
+		panel_1.add(txtNombre);
 		
 		label_1 = new JLabel("Apellido:");
 		label_1.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		label_1.setBounds(20, 148, 96, 27);
 		panel_1.add(label_1);
 		
-		textField_2 = new JTextField();
-		textField_2.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_2.setColumns(10);
-		textField_2.setBounds(184, 148, 168, 26);
-		panel_1.add(textField_2);
+		txtApellido = new JTextField();
+		txtApellido.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtApellido.setColumns(10);
+		txtApellido.setBounds(184, 148, 168, 26);
+		panel_1.add(txtApellido);
 		
 		label_4 = new JLabel("Usuario:");
 		label_4.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		label_4.setBounds(20, 186, 96, 24);
 		panel_1.add(label_4);
 		
-		textField_3 = new JTextField();
-		textField_3.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_3.setColumns(10);
-		textField_3.setBounds(184, 186, 168, 26);
-		panel_1.add(textField_3);
+		txtUsuario = new JTextField();
+		txtUsuario.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtUsuario.setColumns(10);
+		txtUsuario.setBounds(184, 186, 168, 26);
+		panel_1.add(txtUsuario);
 		
 		label_5 = new JLabel("Clave:");
 		label_5.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		label_5.setBounds(20, 221, 96, 26);
 		panel_1.add(label_5);
 		
-		textField_4 = new JTextField();
-		textField_4.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		textField_4.setColumns(10);
-		textField_4.setBounds(184, 221, 168, 26);
-		panel_1.add(textField_4);
+		txtClave = new JTextField();
+		txtClave.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtClave.setColumns(10);
+		txtClave.setBounds(184, 221, 168, 26);
+		panel_1.add(txtClave);
 		
 		label_6 = new JLabel("Fecha Registro:");
 		label_6.setFont(new Font("Roboto Light", Font.PLAIN, 16));
 		label_6.setBounds(20, 258, 118, 26);
 		panel_1.add(label_6);
 		
-		dateChooser = new JDateChooser();
-		dateChooser.setBounds(184, 258, 166, 26);
-		panel_1.add(dateChooser);
+		dcFecha = new JDateChooser();
+		dcFecha.setBounds(184, 258, 166, 26);
+		panel_1.add(dcFecha);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
 	}
 
 	public void mouseClicked(MouseEvent e) {
+		if (e.getSource() == label_2) {
+			mouseClickedLabel_2(e);
+		}
 		if (e.getSource() == label_3) {
 			mouseClickedLabel_3(e);
 		}
@@ -220,5 +238,150 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 	}
 	protected void mouseClickedLabel_3(MouseEvent e) {
 		this.dispose();
+	}
+	private void alerta(String s){
+		JOptionPane.showMessageDialog(null,s,"Alerta",2);
+	}
+	private void mensaje(String s){
+		JOptionPane.showMessageDialog(null, s);
+	}
+	private int leerId(){
+		int id=0;
+		try {
+			if(txtCodigo.getText().trim().length()==0){
+				alerta("Campo Codigo Vacio");
+			}else{
+				id = Integer.parseInt(txtCodigo.getText().trim());
+			}
+			
+		} catch (NumberFormatException e) {
+			alerta("Solo se aceptan numeros !");
+		}
+		
+		return id;
+	}
+	private String leerNombre(){
+		String nom=null;
+		if(txtNombre.getText().trim().length()==0){
+			alerta("Campo Nombre Vacio");
+		}else if(txtNombre.getText().trim().matches(Validacion.nomApell)==false){
+			alerta("El nombre debe tener de 3 - 25 caracteres !");
+		}else{
+			nom = txtNombre.getText().trim();
+		}
+		return nom;
+	}
+	private String leerApellido(){
+		String apellido=null;
+		if(txtApellido.getText().trim().length()==0){
+			alerta("Campo Nombre Vacio");
+		}else if(txtApellido.getText().trim().matches(Validacion.nomApell)==false){
+			alerta("El apellido debe tener de 3 - 25 caracteres !");
+		}else{
+			apellido = txtApellido.getText().trim();
+		}
+		return apellido;
+	}
+	private String leerUsuario(){
+		String usuario=null;
+		if(txtApellido.getText().trim().length()==0){
+			alerta("Campo Usuario Vacio");
+		}else{
+			usuario = txtUsuario.getText().trim();
+		}
+		return usuario;
+	}
+	private String leerContraseña(){
+		String contraseña = null;
+		if(txtClave.getText().trim().length()==0){
+			alerta("Campo Clave Vacio");
+		}else if(txtClave.getText().trim().matches(Validacion.psw)){
+			alerta("Formato incorrecto, ejemplo: Aa12345");
+		}else{
+			contraseña = txtClave.getText().trim();
+		}
+		
+		return contraseña;
+	}
+	private String leerFecha(){
+		String fecha=null;
+		try {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+			fecha = sdf.format(dcFecha.getDate());
+		} catch (NullPointerException e) {
+			alerta("Campo fecha vacio");
+		}
+		return fecha;
+	}
+	private void listarCampos(int id){
+		ArrayList<Usuario>listarId=gu.listarXId(id);
+		if(listarId.size()==0){
+			alerta("Usuario no existe !");
+		}else{
+		for(Usuario u: listarId){
+			txtCodigo.setText(String.valueOf(u.getIdUsuario()));
+			txtCodigo.setEditable(false);
+			txtNombre.requestFocus();
+			txtNombre.setText(u.getNombre());
+			txtApellido.setText(u.getApellido());
+			txtUsuario.setText(u.getUsuario());
+			txtClave.setText(u.getClave());
+			try {
+				dcFecha.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(u.getFecha_registro()));
+			} catch (ParseException e) {
+				e.getMessage();
+			}
+		}
+		}
+	}
+	private void modificarUsuario(){
+		int id = leerId();
+		String nom = leerNombre(),
+			   apell=leerApellido(),
+			   user=leerUsuario(),
+			   psw=leerContraseña(),
+			   fecha=leerFecha();
+		
+		if(id==0||nom==null||apell==null||user==null||psw==null||fecha==null){
+			alerta("No se actualizo usuario !");
+		}else{
+			Usuario u=new Usuario();
+			u.setIdUsuario(id);
+			u.setNombre(nom);
+			u.setApellido(apell);
+			u.setUsuario(user);
+			u.setClave(psw);
+			u.setFecha_registro(fecha);	
+			int ok = gu.modificar(u);
+			if(ok==0){
+				alerta("Error al actualizar usuario !");
+			}else{
+				mensaje("Actualizacion Exitosa !");
+			}	
+		}
+	}
+	
+	protected void mouseClickedLabel_2(MouseEvent e) {
+		listarCampos(leerId());
+	}
+	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == button) {
+			actionPerformedButton(arg0);
+		}
+	}
+	protected void actionPerformedButton(ActionEvent arg0) {
+		modificarUsuario();
+		limpiarCampos();
+		
+	}
+
+	private void limpiarCampos() {
+		txtCodigo.setText("");
+		txtCodigo.setEditable(true);
+		txtNombre.setText("");
+		txtApellido.setText("");
+		txtUsuario.setText("");
+		txtClave.setText("");
+		dcFecha.setDate(null);
 	}
 }

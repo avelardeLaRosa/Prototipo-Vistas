@@ -8,10 +8,18 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
+
+import controlador.GestionClienteDAO;
+import entidad.Cliente;
+import utils.Validacion;
+
 import java.awt.Color;
 import java.awt.Cursor;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 
@@ -23,21 +31,27 @@ import javax.swing.JTable;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class frmEliminarCliente extends JDialog implements MouseListener, MouseMotionListener {
+public class frmEliminarCliente extends JDialog implements MouseListener, MouseMotionListener, ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JPanel panel;
 	private JPanel panel_1;
 	private JLabel lblIngreseDniO;
 	private JLabel lblBuscarPorDni;
-	private JTextField textField;
+	private JTextField txtBuscar;
 	private JScrollPane scrollPane;
 	private JButton btnEliminar;
 	private JLabel label_2;
-	private JTable table;
-	private JLabel label;
+	private JTable tblCliente;
 	int xMouse,yMouse;
+	private JButton btnBuscar;
+	DefaultTableModel model = new DefaultTableModel();
+	GestionClienteDAO gc = new GestionClienteDAO();
+	private JTextField txtCodigo;
 	/**
 	 * Launch the application.
 	 */
@@ -88,21 +102,23 @@ public class frmEliminarCliente extends JDialog implements MouseListener, MouseM
 		lblBuscarPorDni.setBounds(10, 95, 172, 22);
 		panel_1.add(lblBuscarPorDni);
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
-		textField.setColumns(10);
-		textField.setBounds(172, 95, 188, 22);
-		panel_1.add(textField);
+		txtBuscar = new JTextField();
+		txtBuscar.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
+		txtBuscar.setColumns(10);
+		txtBuscar.setBounds(172, 95, 125, 22);
+		panel_1.add(txtBuscar);
 		
 		scrollPane = new JScrollPane();
 		scrollPane.setBorder(new LineBorder(new Color(0,0,0)));
 		scrollPane.setBounds(10, 128, 410, 174);
 		panel_1.add(scrollPane);
 		
-		table = new JTable();
-		scrollPane.setViewportView(table);
+		tblCliente = new JTable();
+		tblCliente.setFillsViewportHeight(true);
+		scrollPane.setViewportView(tblCliente);
 		
 		btnEliminar = new JButton("ELIMINAR");
+		btnEliminar.addActionListener(this);
 		btnEliminar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnEliminar.setFont(new Font("Roboto Medium", Font.PLAIN, 14));
 		btnEliminar.setBounds(125, 313, 172, 26);
@@ -118,15 +134,25 @@ public class frmEliminarCliente extends JDialog implements MouseListener, MouseM
 		label_2.setIcon(imgCerrar);
 		panel_1.add(label_2);
 		
-		label = new JLabel("");
-		label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		label.setBounds(370, 95, 30, 22);
+		btnBuscar = new JButton("New button");
+		btnBuscar.addActionListener(this);
+		btnBuscar.setIcon(new ImageIcon(frmEliminarCliente.class.getResource("/img/search_icon-icons.com_74448.png")));
+		btnBuscar.setBounds(307, 95, 34, 23);
+		panel_1.add(btnBuscar);
 		ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
-		ImageIcon imgBuscar=new ImageIcon(icoBuscar.getImage().getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH));
-		label.setIcon(imgBuscar);
-		panel_1.add(label);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
+		
+		model.addColumn("Código");
+		model.addColumn("Nombre");
+		model.addColumn("Apellido");
+		tblCliente.setModel(model);
+		
+		txtCodigo = new JTextField();
+		txtCodigo.setBounds(349, 99, 24, 20);
+		panel_1.add(txtCodigo);
+		txtCodigo.setColumns(10);
+		txtCodigo.setVisible(false);
 	}
 	public void mouseClicked(MouseEvent arg0) {
 		if (arg0.getSource() == label_2) {
@@ -162,5 +188,87 @@ public class frmEliminarCliente extends JDialog implements MouseListener, MouseM
 		int x=e.getXOnScreen();
 		int y=e.getYOnScreen();
 		this.setLocation(x-xMouse, y-yMouse);
+	}
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnEliminar) {
+			do_btnEliminar_actionPerformed(e);
+		}
+		if (e.getSource() == btnBuscar) {
+			do_btnBuscar_actionPerformed(e);
+		}
+	}
+	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
+		buscarDNI();
+	}
+	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
+		eliminarCliente();
+	}
+	private void buscarDNI() {
+		String dni;
+		dni = getBuscar();
+		ArrayList<Cliente> data = new GestionClienteDAO().listarClientexDNI(dni);
+
+		if (data.size() == 0) {
+			mensaje("No existe el DNI");
+		} 
+		else {
+			
+			for (Cliente c : data) {
+				Object fila[] = {c.getIdCliente(),
+						 		c.getNombre(),
+						 		c.getApellido()};
+				model.addRow(fila);
+				txtCodigo.setText(c.getIdCliente()+"");
+			}
+		}
+	}
+	
+	private String getBuscar() {
+		String dni = null;
+		if(txtBuscar.getText().trim().length() == 0) {
+			//lblDn.setVisible(true);
+			mensaje("vacio");
+			txtBuscar.requestFocus();
+		}
+			
+		else if(txtBuscar.getText().trim().matches(Validacion.DNI) == false)
+			mensaje("Formato incorrecto del DNI. Ingresar 8 números");
+		else
+			dni = txtBuscar.getText();
+		
+	return dni;
+
+	}
+	
+	private void mensaje(String msj){
+		JOptionPane.showMessageDialog(this, msj, "Sistema" , 0);
+	}
+	
+	private void mensaje1(String msj){
+		JOptionPane.showMessageDialog(this, msj, "Sistema" , 1);
+	}
+	
+	private void eliminarCliente() {
+		//declarar variables
+		int codigo,boton;
+		//obtener codigo ingresado
+		codigo = Integer.parseInt(txtCodigo.getText());
+		
+		//obtener el valor de la ventana de confirmación
+		boton = JOptionPane.showConfirmDialog(this, "Seguro de eliminar ? "," Sistema",JOptionPane.YES_NO_OPTION);
+		if(boton == 0) { //selecciono
+			int res = gc.eliminar(codigo);
+			if(res == 0)
+				mensaje("Error al eliminar");
+			else {
+				mensaje1("Usuario eliminado");
+				model.setRowCount(0);
+				txtBuscar.setText("");
+				txtBuscar.requestFocus();
+			}
+				
+			
+			
+		}
 	}
 }

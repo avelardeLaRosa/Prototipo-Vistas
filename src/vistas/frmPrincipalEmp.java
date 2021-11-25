@@ -203,12 +203,12 @@ public class frmPrincipalEmp extends JFrame implements MouseListener, MouseMotio
 		lbl_Hora.setBounds(489, 42, 140, 20);
 		panel_1.add(lbl_Hora);
 		
-		lblNombreDeCajero = new JLabel("NOMBRE DE CAJERO");
-		lblNombreDeCajero.setBounds(144, 12, 140, 20);
+		lblNombreDeCajero = new JLabel(frmLogin.u.getNombre()+" "+frmLogin.u.getApellido());
+		lblNombreDeCajero.setBounds(97, 11, 140, 20);
 		panel_1.add(lblNombreDeCajero);
 		lblNombreDeCajero.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNombreDeCajero.setForeground(Color.WHITE);
-		lblNombreDeCajero.setFont(new Font("Roboto Medium", Font.PLAIN, 13));
+		lblNombreDeCajero.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
 		
 		lblFecha = new JLabel("fecha");
 		lblFecha.setHorizontalAlignment(SwingConstants.CENTER);
@@ -217,10 +217,10 @@ public class frmPrincipalEmp extends JFrame implements MouseListener, MouseMotio
 		lblFecha.setBounds(433, 11, 208, 20);
 		panel_1.add(lblFecha);
 		
-		lblBienvenido = new JLabel("BIENVENIDO :");
+		lblBienvenido = new JLabel("Cajero :");
 		lblBienvenido.setForeground(Color.WHITE);
 		lblBienvenido.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
-		lblBienvenido.setBounds(38, 15, 140, 14);
+		lblBienvenido.setBounds(34, 8, 73, 26);
 		panel_1.add(lblBienvenido);
 		
 		label = new JLabel("");

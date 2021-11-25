@@ -31,7 +31,7 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 	int xMouse,yMouse;
 	private JLabel label;
 	private JButton btnCerrarSesion;
-	private JButton btnNewButton;
+	private JButton btnUsuarios;
 
 	/**
 	 * Launch the application.
@@ -90,13 +90,13 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 					panel_1.add(btnContacto);
 				}
 				{
-					btnNewButton = new JButton("Usuarios");
-					btnNewButton.addActionListener(this);
-					btnNewButton.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
-					btnNewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-					btnNewButton.setIcon(new ImageIcon(frmConfiguracion.class.getResource("/img/user_32_px.png")));
-					btnNewButton.setBounds(0, 88, 341, 44);
-					panel_1.add(btnNewButton);
+					btnUsuarios = new JButton("Usuarios");
+					btnUsuarios.addActionListener(this);
+					btnUsuarios.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
+					btnUsuarios.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					btnUsuarios.setIcon(new ImageIcon(frmConfiguracion.class.getResource("/img/user_32_px.png")));
+					btnUsuarios.setBounds(0, 88, 341, 44);
+					panel_1.add(btnUsuarios);
 				}
 				{
 					JLabel lblConfiguracion = new JLabel("CONFIGURACION");
@@ -118,6 +118,7 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 				}
 			}
 		}
+		permisos();
 	}
 
 	public void mouseClicked(MouseEvent arg0) {
@@ -159,7 +160,7 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 		this.dispose();
 	}
 	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getSource() == btnNewButton) {
+		if (arg0.getSource() == btnUsuarios) {
 			actionPerformedBtnNewButton(arg0);
 		}
 		if (arg0.getSource() == btnCerrarSesion) {
@@ -184,5 +185,16 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 		user.setVisible(true);
 		user.setLocationRelativeTo(null);
 		this.dispose();
+	}
+	private void mensaje(String s){
+		JOptionPane.showMessageDialog(null, s);
+	}
+	private void permisos(){
+		switch (frmLogin.u.getIdtipo()) {
+		case 2: btnUsuarios.setEnabled(false);
+			break;
+		default:
+			break;
+		}
 	}
 }
