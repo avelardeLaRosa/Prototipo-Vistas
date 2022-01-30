@@ -2,7 +2,9 @@ package entidad;
 
 public class Usuario {
 	private int idUsuario,idtipo;
-	private String nombre,apellido,usuario,clave,fecha_registro,fecha_eliminacion;
+	private String nombre,apellido,usuario,clave,fecha_registro,fecha_eliminacion,eliminado;
+
+	
 
 	public Usuario(){}
 	
@@ -38,6 +40,13 @@ public class Usuario {
 
 	public void setIdtipo(int idtipo) {this.idtipo = idtipo;}
 
+	public String getEliminado() {
+		return eliminado;
+	}
+
+	public void setEliminado(String eliminado) {
+		this.eliminado = eliminado;
+	}
 	
 	
 

@@ -400,4 +400,5 @@ public class frmModProduct extends JDialog implements MouseListener, MouseMotion
 	protected void actionPerformedBtnGuardarCambios(ActionEvent arg0) {
 		modificarProducto();
 	}
+	
 }

@@ -9,10 +9,17 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controlador.GestionCajaDAO;
+import controlador.GestionCajaPruebaDAO;
+import entidad.Caja;
+
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 
@@ -20,6 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextField;
 
 public class frmCaja extends JDialog implements MouseListener, MouseMotionListener, ActionListener {
 
@@ -32,6 +40,11 @@ public class frmCaja extends JDialog implements MouseListener, MouseMotionListen
 	private JLabel label;
 	private JButton btnApertura;
 	private JButton btnCierre;
+	GestionCajaDAO gc = new GestionCajaDAO();
+	GestionCajaPruebaDAO gcp=new GestionCajaPruebaDAO();
+	
+	public static Caja c=new Caja();;
+	public static int cod_estado;
 
 	/**
 	 * Launch the application.
@@ -69,7 +82,7 @@ public class frmCaja extends JDialog implements MouseListener, MouseMotionListen
 		panel.add(panel_1);
 		panel_1.setLayout(null);
 		
-		lblEligaUnaOpcion = new JLabel("Eliga una opcion");
+		lblEligaUnaOpcion = new JLabel("Elija una opcion");
 		lblEligaUnaOpcion.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEligaUnaOpcion.setFont(new Font("Roboto Medium", Font.PLAIN, 20));
 		lblEligaUnaOpcion.setBounds(122, 67, 246, 26);
@@ -108,6 +121,8 @@ public class frmCaja extends JDialog implements MouseListener, MouseMotionListen
 		panel_1.add(btnCierre);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
+		AperturayCierre();
+		
 	}
 
 	public void mouseClicked(MouseEvent arg0) {
@@ -155,6 +170,7 @@ public class frmCaja extends JDialog implements MouseListener, MouseMotionListen
 		frmCajaApertura aper=new frmCajaApertura();
 		aper.setVisible(true);
 		aper.setLocationRelativeTo(null);
+		this.dispose();
 		
 		
 	}
@@ -163,6 +179,7 @@ public class frmCaja extends JDialog implements MouseListener, MouseMotionListen
 		frmCajaCierre cierre=new frmCajaCierre();
 		cierre.setVisible(true);
 		cierre.setLocationRelativeTo(null);
+		this.dispose();
 	
 		
 		
@@ -172,5 +189,20 @@ public class frmCaja extends JDialog implements MouseListener, MouseMotionListen
 		pri.setVisible(true);
 		pri.setLocationRelativeTo(null);
 		this.dispose();
+	}
+	
+	private void AperturayCierre() {
+		cod_estado = gc.ValidarCaja();
+		
+		if(cod_estado == 1) {
+			btnCierre.setEnabled(false);
+			btnApertura.setEnabled(true);
+		}
+		else{
+			btnApertura.setEnabled(false);
+			btnCierre.setEnabled(true);
+		}
+		
+
 	}
 }

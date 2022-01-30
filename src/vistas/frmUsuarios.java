@@ -121,7 +121,6 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 			public boolean isCellEditable(int rowIndex,int columnIndex){
 				return false;}
 		};
-		model.addColumn("ID Usuario");
 		model.addColumn("Nombre");
 		model.addColumn("Apellido");
 		model.addColumn("Usuario");
@@ -266,7 +265,6 @@ public class frmUsuarios extends JDialog implements MouseListener, ActionListene
 		}else{
 			for(UsuarioXTipo ut:listar){
 				Object[]fila={
-						ut.getIdUsuario(),
 						ut.getNombre(),
 						ut.getApellido(),
 						ut.getUsuario(),

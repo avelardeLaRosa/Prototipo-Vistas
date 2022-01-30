@@ -33,6 +33,8 @@ import entidad.Usuario;
 import utils.Validacion;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class frmModUsuario extends JDialog implements MouseListener, MouseMotionListener, ActionListener {
 
@@ -58,6 +60,8 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 	private JLabel label_6;
 	private JDateChooser dcFecha;
 	GestionUsuarioDAO gu=new GestionUsuarioDAO();
+	private JLabel lblTipo;
+	private JComboBox comboBox;
 	/**
 	 * Launch the application.
 	 */
@@ -75,7 +79,7 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 	 * Create the dialog.
 	 */
 	public frmModUsuario() {
-		setBounds(0, 0, 450, 350);
+		setBounds(0, 0, 450, 391);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -86,13 +90,13 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		panel.setBackground(new Color(193,18,5));
 		panel.addMouseMotionListener(this);
 		panel.addMouseListener(this);
-		panel.setBounds(0, 0, 450, 350);
+		panel.setBounds(0, 0, 450, 391);
 		contentPanel.add(panel);
 		panel.setLayout(null);
 		
 		panel_1 = new JPanel();
 		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panel_1.setBounds(10, 0, 430, 350);
+		panel_1.setBounds(10, 0, 430, 391);
 		panel.add(panel_1);
 		panel_1.setLayout(null);
 		
@@ -142,7 +146,7 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		button.addActionListener(this);
 		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		button.setFont(new Font("Roboto Medium", Font.PLAIN, 14));
-		button.setBounds(132, 298, 188, 41);
+		button.setBounds(126, 339, 188, 41);
 		panel_1.add(button);
 		
 		label = new JLabel("Nombre:");
@@ -191,12 +195,23 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		
 		label_6 = new JLabel("Fecha Registro:");
 		label_6.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		label_6.setBounds(20, 258, 118, 26);
+		label_6.setBounds(22, 290, 118, 26);
 		panel_1.add(label_6);
 		
 		dcFecha = new JDateChooser();
-		dcFecha.setBounds(184, 258, 166, 26);
+		dcFecha.setBounds(186, 290, 166, 26);
 		panel_1.add(dcFecha);
+		
+		lblTipo = new JLabel("Tipo:");
+		lblTipo.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		lblTipo.setBounds(20, 258, 96, 26);
+		panel_1.add(lblTipo);
+		
+		comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Seleccione Tipo ", "Administrador", "Cajero"}));
+		comboBox.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 14));
+		comboBox.setBounds(184, 258, 168, 21);
+		panel_1.add(comboBox);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
 	}
@@ -295,13 +310,22 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		String contraseña = null;
 		if(txtClave.getText().trim().length()==0){
 			alerta("Campo Clave Vacio");
-		}else if(txtClave.getText().trim().matches(Validacion.psw)){
-			alerta("Formato incorrecto, ejemplo: Aa12345");
+		}else if(txtClave.getText().trim().matches(Validacion.psw)==false){
+			alerta("Formato incorrecto, ejemplo: A-a 12345");
 		}else{
 			contraseña = txtClave.getText().trim();
 		}
 		
 		return contraseña;
+	}
+	private int leerCombo(){
+		int cbo=0;
+		if(comboBox.getSelectedIndex()==0){
+			alerta("Eliga un tipo de usuario");
+		}else{
+			cbo = comboBox.getSelectedIndex();
+		}
+		return cbo;
 	}
 	private String leerFecha(){
 		String fecha=null;
@@ -326,6 +350,7 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 			txtApellido.setText(u.getApellido());
 			txtUsuario.setText(u.getUsuario());
 			txtClave.setText(u.getClave());
+			comboBox.setSelectedIndex(u.getIdtipo());
 			try {
 				dcFecha.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(u.getFecha_registro()));
 			} catch (ParseException e) {
@@ -341,6 +366,7 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 			   user=leerUsuario(),
 			   psw=leerContraseña(),
 			   fecha=leerFecha();
+			int	cbo = leerCombo();
 		
 		if(id==0||nom==null||apell==null||user==null||psw==null||fecha==null){
 			alerta("No se actualizo usuario !");
@@ -351,6 +377,7 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 			u.setApellido(apell);
 			u.setUsuario(user);
 			u.setClave(psw);
+			u.setIdtipo(cbo);
 			u.setFecha_registro(fecha);	
 			int ok = gu.modificar(u);
 			if(ok==0){
@@ -383,5 +410,6 @@ public class frmModUsuario extends JDialog implements MouseListener, MouseMotion
 		txtUsuario.setText("");
 		txtClave.setText("");
 		dcFecha.setDate(null);
+		comboBox.setSelectedIndex(0);
 	}
 }

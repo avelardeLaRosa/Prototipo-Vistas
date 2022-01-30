@@ -339,6 +339,7 @@ public class frmAddProduct extends JDialog implements MouseListener, MouseMotion
 				alerta("Error en el resgistro");
 			}else{
 				mensaje("Registro Exitoso");
+				limpiar();
 			}
 		}
 	}
@@ -347,5 +348,12 @@ public class frmAddProduct extends JDialog implements MouseListener, MouseMotion
 	}
 	private void mensaje(String s){
 		JOptionPane.showMessageDialog(null,s);
+	}
+	void limpiar(){
+		txtNombre.setText("");
+		txtStock.setText("");
+		txtPrecio.setText("");
+		cboCategoria.setSelectedIndex(0);
+		cboProveedor.setSelectedIndex(0);
 	}
 }

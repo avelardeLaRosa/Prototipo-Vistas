@@ -6,6 +6,14 @@ public class DetalleVenta {
 	private double precio;
 	private String num_bol;
 	
+	public DetalleVenta(int cantidad, int idProducto, double precio, String num_bol) {
+		super();
+		this.cantidad = cantidad;
+		this.idProducto = idProducto;
+		this.precio = precio;
+		this.num_bol = num_bol;
+	}
+	
 	public DetalleVenta(){};
 	
 	

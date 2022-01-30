@@ -134,12 +134,13 @@ public class frmEliminarCliente extends JDialog implements MouseListener, MouseM
 		label_2.setIcon(imgCerrar);
 		panel_1.add(label_2);
 		
-		btnBuscar = new JButton("New button");
+		btnBuscar = new JButton("");
 		btnBuscar.addActionListener(this);
-		btnBuscar.setIcon(new ImageIcon(frmEliminarCliente.class.getResource("/img/search_icon-icons.com_74448.png")));
 		btnBuscar.setBounds(307, 95, 34, 23);
-		panel_1.add(btnBuscar);
 		ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
+		ImageIcon imgBuscar=new ImageIcon(icoBuscar.getImage().getScaledInstance(btnBuscar.getWidth(), btnBuscar.getHeight(), Image.SCALE_SMOOTH));
+		btnBuscar.setIcon(imgBuscar);
+		panel_1.add(btnBuscar);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
 		
@@ -255,7 +256,7 @@ public class frmEliminarCliente extends JDialog implements MouseListener, MouseM
 		codigo = Integer.parseInt(txtCodigo.getText());
 		
 		//obtener el valor de la ventana de confirmación
-		boton = JOptionPane.showConfirmDialog(this, "Seguro de eliminar ? "," Sistema",JOptionPane.YES_NO_OPTION);
+		boton = JOptionPane.showConfirmDialog(this, "¿Seguro de eliminar ? "," Sistema",JOptionPane.YES_NO_OPTION);
 		if(boton == 0) { //selecciono
 			int res = gc.eliminar(codigo);
 			if(res == 0)

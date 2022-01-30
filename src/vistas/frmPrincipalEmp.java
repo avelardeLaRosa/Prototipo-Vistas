@@ -27,6 +27,7 @@ import java.awt.Image;
 import javax.swing.border.LineBorder;
 import AppPackage.AnimationClass;
 import Hilos.HiloHora;
+import controlador.GestionCajaDAO;
 
 import javax.swing.JSeparator;
 import javax.swing.border.MatteBorder;
@@ -55,7 +56,7 @@ public class frmPrincipalEmp extends JFrame implements MouseListener, MouseMotio
 	private JLabel lblBienvenido;
 	private JLabel label;
 	private JLabel label_1;
-
+	GestionCajaDAO gc = new GestionCajaDAO();
 	/**
 	 * Launch the application.
 	 */
@@ -247,6 +248,9 @@ public class frmPrincipalEmp extends JFrame implements MouseListener, MouseMotio
 		
 		mostrarHora();
 		mostrarFecha();
+		validarAperturayCierre();
+		
+		
 	}
 	public void mouseClicked(MouseEvent arg0) {
 		if (arg0.getSource() == label_1) {
@@ -315,10 +319,15 @@ public class frmPrincipalEmp extends JFrame implements MouseListener, MouseMotio
 		lblFecha.setText(flarga.format(fecha));
 	}
 	protected void mouseClickedLblVenta(MouseEvent arg0) {
-		frmVenta venta=new frmVenta();
-		venta.setVisible(true);
-		venta.setLocationRelativeTo(null);
-		this.dispose();
+		if(gc.ValidarCaja() == 1) {
+			alerta("La Caja se encuentra cerrada, debe aperturarla");
+		}
+		else {
+			frmVenta venta=new frmVenta();
+			venta.setVisible(true);
+			venta.setLocationRelativeTo(null);
+			this.dispose();
+		}
 	}
 	protected void mouseClickedLblInventario_1(MouseEvent arg0) {
 		frmInventario inventario=new frmInventario();
@@ -335,14 +344,14 @@ public class frmPrincipalEmp extends JFrame implements MouseListener, MouseMotio
 	protected void mouseClickedLblReporte(MouseEvent arg0) {
 		frmProveedores pro=new frmProveedores();
 		pro.setVisible(true);
-		pro.setLocationRelativeTo(null);
+		pro.setLocationRelativeTo(this);
 		this.dispose();
+		
 	}
 	protected void mouseClickedLblProveedores(MouseEvent arg0) {
-		frmReportes repor=new frmReportes();
-		repor.setVisible(true);
-		repor.setLocationRelativeTo(null);
-		this.dispose();
+		DlgOpcReportes dop=new DlgOpcReportes();
+		dop.setVisible(true);
+		dop.setLocationRelativeTo(this);
 	}
 	protected void mouseClickedLblInventario(MouseEvent arg0) {
 		frmCaja caja=new frmCaja();
@@ -367,4 +376,19 @@ public class frmPrincipalEmp extends JFrame implements MouseListener, MouseMotio
 		conf.setLocationRelativeTo(null);
 		this.dispose();
 	}
+	
+	private void validarAperturayCierre() {
+		int cod_estado = gc.ValidarCaja();
+		if(cod_estado == 1) {
+			lblVenta.setEnabled(false);
+		}
+		else{
+			lblVenta.setEnabled(true);
+		}
+
+	}
+	private void alerta(String s){
+		JOptionPane.showMessageDialog(this,s,"ALERTA",0);
+	}
+	
 }

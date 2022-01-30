@@ -2,12 +2,17 @@ package entidad;
 
 public class Caja {
 	
-	private int idCaja,idUsuario;
-	private double monto;
-	private String comentario,fecha;
+	private int idCaja,cod_estado;
+	private String des_caja;
 	
 	public Caja(){};
 	
+	public Caja(int idCaja, int cod_estado, String des_caja) {
+		super();
+		this.idCaja = idCaja;
+		this.cod_estado = cod_estado;
+		this.des_caja = des_caja;
+	}
 	public int getIdCaja() {
 		return idCaja;
 	}
@@ -16,37 +21,22 @@ public class Caja {
 		this.idCaja = idCaja;
 	}
 
-	public int getIdUsuario() {
-		return idUsuario;
+	public int getCod_estado() {
+		return cod_estado;
 	}
 
-	public void setIdUsuario(int idUsuario) {
-		this.idUsuario = idUsuario;
+	public void setCod_estado(int cod_estado) {
+		this.cod_estado = cod_estado;
 	}
 
-	public double getMonto() {
-		return monto;
+	public String getDes_caja() {
+		return des_caja;
 	}
 
-	public void setMonto(double monto) {
-		this.monto = monto;
-	}
-
-	public String getComentario() {
-		return comentario;
-	}
-
-	public void setComentario(String comentario) {
-		this.comentario = comentario;
+	public void setDes_caja(String des_caja) {
+		this.des_caja = des_caja;
 	}
 	
-	public String getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(String fecha) {
-		this.fecha = fecha;
-	}
 	
 	
 

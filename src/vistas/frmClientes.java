@@ -198,8 +198,10 @@ public class frmClientes extends JDialog implements MouseListener, MouseMotionLi
 		btnBuscar = new JButton("");
 		btnBuscar.addMouseListener(this);
 		btnBuscar.addActionListener(this);
-		btnBuscar.setIcon(new ImageIcon(frmClientes.class.getResource("/img/search_icon-icons.com_74448.png")));
 		btnBuscar.setBounds(395, 7, 27, 25);
+		ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
+		ImageIcon imgBuscar=new ImageIcon(icoBuscar.getImage().getScaledInstance(btnBuscar.getWidth(), btnBuscar.getHeight(), Image.SCALE_SMOOTH));
+		btnBuscar.setIcon(imgBuscar);
 		panel.add(btnBuscar);
 		
 		lblBuscar = new JLabel("*");
@@ -343,24 +345,34 @@ public class frmClientes extends JDialog implements MouseListener, MouseMotionLi
 		int fila;
 		dni = getBuscar();
 		listarClientes();
+		if(dni==null){alerta("Ingrese Codigo");}
+		else{
 		fila = 	confirmarDNI(tblClientes,dni,3);	
 		lblBuscar.setVisible(false);
 		
 		if (dni == null) {
 			Buscar(true);
+			txtBuscar.setText("");
 		}
 		else if(fila == -1) {
 			mensaje("Cliente no existe !.");
+			txtBuscar.setText("");
 			txtBuscar.requestFocus();	
 		}
 		else {
 			tblClientes.changeSelection(fila, 1, false, false);
+		}
 		}
 					
 	}
 		
 	
 	
+	private void alerta(String s) {
+		JOptionPane.showMessageDialog(null, s,"ERROR",0);
+		
+	}
+
 	private String getBuscar() {
 		String dni = null;
 		if(txtBuscar.getText().trim().length() == 0) {

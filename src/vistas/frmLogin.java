@@ -140,7 +140,7 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		pn_Entrar = new JPanel();
 		pn_Entrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		pn_Entrar.addMouseListener(this);
-		pn_Entrar.setBounds(159, 354, 164, 38);
+		pn_Entrar.setBounds(159, 354, 164, 45);
 		pn_Entrar.setBackground(new Color(193, 18, 5 ));
 		panel.add(pn_Entrar);
 		pn_Entrar.setLayout(null);
@@ -149,7 +149,7 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		lblEntrar.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEntrar.setBackground(Color.WHITE);
 		lblEntrar.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
-		lblEntrar.setBounds(44, 11, 80, 14);
+		lblEntrar.setBounds(43, 11, 80, 27);
 		lblEntrar.setForeground(Color.WHITE);
 		pn_Entrar.add(lblEntrar);
 		
@@ -288,16 +288,25 @@ public class frmLogin extends JFrame implements MouseListener, MouseMotionListen
 		
 	}
 	private void login(String usr, String psw){
-		u = gu.login(usr, psw);
-		if(u!=null){
-			mensaje("¡ Bienvenido " + u.getNombre()+" !");
-			frmPrincipalEmp pri = new frmPrincipalEmp();
-			pri.setVisible(true);
-			pri.setLocationRelativeTo(this);
-			this.dispose();
-			
-		}else{
-			mensaje("Datos invalidos");
+		try {
+			u = gu.login(usr, psw);
+			String eliminado = u.getEliminado();
+			if (eliminado.equals("Si")) {
+				alerta("Usuario sin acceso");
+				txtU.setText("");
+				txt_Contraseña.setText("");
+			} else if (u != null) {
+				mensaje("¡ Bienvenido " + u.getNombre() + " !");
+				frmPrincipalEmp pri = new frmPrincipalEmp();
+				pri.setVisible(true);
+				pri.setLocationRelativeTo(this);
+				this.dispose();
+
+			} else {
+				mensaje("Datos invalidos");
+			} 
+		} catch (Exception e) {
+			alerta("Ingrese Usuario y Contraseña para iniciar sesion");
 		}
 	}
 	private void mensaje(String string) {

@@ -19,6 +19,7 @@ import java.awt.Cursor;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.rmi.activation.ActivationInstantiator;
 import java.util.ArrayList;
 
 import javax.swing.JLabel;
@@ -55,7 +56,7 @@ public class frmModCliente extends JDialog implements MouseListener, MouseMotion
 	private JButton button;
 	private JLabel lblCorreo;
 	private JTextField txtCorreo;
-	private JButton btnBuscar;
+	private JButton btnBuscar1;
 	GestionClienteDAO gc = new GestionClienteDAO();
 	private JTextField txtCodigo;
 
@@ -130,18 +131,19 @@ public class frmModCliente extends JDialog implements MouseListener, MouseMotion
 		txtBuscar.setBounds(179, 12, 168, 26);
 		panel_2.add(txtBuscar);
 		
-		btnBuscar = new JButton("New button");
-		btnBuscar.addActionListener(this);
-		btnBuscar.setIcon(new ImageIcon(frmModCliente.class.getResource("/img/search_icon-icons.com_74448.png")));
-		btnBuscar.setBounds(357, 11, 28, 29);
-		panel_2.add(btnBuscar);
+		btnBuscar1 = new JButton("");
+		btnBuscar1.addActionListener(this);
+		btnBuscar1.setBounds(357, 11, 32, 29);
+		ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
+		ImageIcon imgBuscar=new ImageIcon(icoBuscar.getImage().getScaledInstance(btnBuscar1.getWidth(), btnBuscar1.getHeight(), Image.SCALE_SMOOTH));
+		btnBuscar1.setIcon(imgBuscar);
+		panel_2.add(btnBuscar1);
 		
 		txtCodigo = new JTextField();
 		txtCodigo.setBounds(151, 12, 24, 26);
 		panel_2.add(txtCodigo);
 		txtCodigo.setColumns(10);
 		txtCodigo.setVisible(false);
-		ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
 		
 		label_4 = new JLabel("Nombre");
 		label_4.setFont(new Font("Roboto Light", Font.PLAIN, 16));
@@ -206,6 +208,7 @@ public class frmModCliente extends JDialog implements MouseListener, MouseMotion
 		panel_1.add(txtCorreo);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
+		ActivarCAMPOS(false);
 	}
 
 	public void mouseClicked(MouseEvent arg0) {
@@ -248,7 +251,7 @@ public class frmModCliente extends JDialog implements MouseListener, MouseMotion
 		if (e.getSource() == button) {
 			do_button_actionPerformed(e);
 		}
-		if (e.getSource() == btnBuscar) {
+		if (e.getSource() == btnBuscar1) {
 			do_btnBuscar_actionPerformed(e);
 		}
 	}
@@ -268,7 +271,7 @@ public class frmModCliente extends JDialog implements MouseListener, MouseMotion
 			mensaje("Lista vacía");
 		} 
 		else {
-			
+			ActivarCAMPOS(true);
 			for (Cliente c : data) {
 				txtNombre.setText(c.getNombre());
 				txtApellido.setText(c.getApellido());
@@ -414,6 +417,7 @@ public class frmModCliente extends JDialog implements MouseListener, MouseMotion
 			else {
 				mensaje1("El registro se realizó satisfactoriamente");
 				limpiar();
+				ActivarCAMPOS(false);
 				txtBuscar.requestFocus();
 			}
 				
@@ -433,5 +437,12 @@ public class frmModCliente extends JDialog implements MouseListener, MouseMotion
 	
 	private int getCodigo() {
 		return Integer.parseInt(txtCodigo.getText());
+	}
+	private void ActivarCAMPOS(boolean i) {
+		txtNombre.setEditable(i);
+		txtApellido.setEditable(i);
+		txtDni.setEditable(i);
+		txtTelefono.setEditable(i);
+		txtCorreo.setEditable(i);
 	}
 }

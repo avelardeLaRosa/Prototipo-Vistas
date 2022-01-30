@@ -5,17 +5,16 @@ public class CabeceraVenta {
 	private int idCliente,idCaja,idUsuario;
 	private double total_bol;
 	private String fecha_bol,num_bol;
-	
-	public CabeceraVenta(String num_bol, int idCliente, int idCaja, int idUsuario, double total_bol, String fecha_bol) {
+
+	public CabeceraVenta(int idCliente, int idCaja, int idUsuario, double total_bol, String fecha_bol, String num_bol) {
 		super();
-		this.num_bol = num_bol;
 		this.idCliente = idCliente;
 		this.idCaja = idCaja;
 		this.idUsuario = idUsuario;
 		this.total_bol = total_bol;
 		this.fecha_bol = fecha_bol;
+		this.num_bol = num_bol;
 	}
-	
 	public CabeceraVenta(){};
 	
 	public String getNum_bol() {

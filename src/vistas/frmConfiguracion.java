@@ -32,6 +32,7 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 	private JLabel label;
 	private JButton btnCerrarSesion;
 	private JButton btnUsuarios;
+	private JButton btnContacto;
 
 	/**
 	 * Launch the application.
@@ -82,7 +83,8 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 					panel_1.add(btnCerrarSesion);
 				}
 				{
-					JButton btnContacto = new JButton("Contactos");
+					btnContacto = new JButton("Contactos");
+					btnContacto.addActionListener(this);
 					btnContacto.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
 					btnContacto.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 					btnContacto.setIcon(new ImageIcon(frmConfiguracion.class.getResource("/img/live_contacts_15412.png")));
@@ -91,6 +93,7 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 				}
 				{
 					btnUsuarios = new JButton("Usuarios");
+					btnUsuarios.addMouseListener(this);
 					btnUsuarios.addActionListener(this);
 					btnUsuarios.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
 					btnUsuarios.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -122,6 +125,9 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 	}
 
 	public void mouseClicked(MouseEvent arg0) {
+		if (arg0.getSource() == btnUsuarios) {
+			mouseClickedBtnUsuarios(arg0);
+		}
 		if (arg0.getSource() == label) {
 			mouseClickedLabel(arg0);
 		}
@@ -160,6 +166,9 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 		this.dispose();
 	}
 	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == btnContacto) {
+			do_btnContacto_actionPerformed(arg0);
+		}
 		if (arg0.getSource() == btnUsuarios) {
 			actionPerformedBtnNewButton(arg0);
 		}
@@ -189,6 +198,9 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 	private void mensaje(String s){
 		JOptionPane.showMessageDialog(null, s);
 	}
+	private void alerta(String s){
+		JOptionPane.showMessageDialog(null, s,"ERROR",0);
+	}
 	private void permisos(){
 		switch (frmLogin.u.getIdtipo()) {
 		case 2: btnUsuarios.setEnabled(false);
@@ -196,5 +208,13 @@ public class frmConfiguracion extends JDialog implements MouseListener, MouseMot
 		default:
 			break;
 		}
+	}
+	protected void do_btnContacto_actionPerformed(ActionEvent arg0) {
+		DlgContactos dc = new DlgContactos();
+		dc.setVisible(true);
+		dc.setLocationRelativeTo(this);
+	}
+	protected void mouseClickedBtnUsuarios(MouseEvent arg0) {
+		alerta("No Cuenta con los permisos");
 	}
 }

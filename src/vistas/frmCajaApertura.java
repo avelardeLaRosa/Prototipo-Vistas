@@ -17,7 +17,12 @@ import java.util.ArrayList;
 import javax.swing.border.LineBorder;
 
 import controlador.GestionCajaDAO;
+import controlador.GestionCajaEstadoDAO;
+import controlador.GestionCajaPruebaDAO;
 import entidad.Caja;
+import entidad.CajaEstado;
+import entidad.CajaApertura;
+import entidad.DetalleVenta;
 import entidad.Producto;
 import entidad.Usuario;
 
@@ -28,12 +33,15 @@ import java.awt.Font;
 import java.awt.Image;
 
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class frmCajaApertura extends JDialog implements MouseListener, MouseMotionListener, ActionListener {
 
@@ -43,16 +51,20 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 	private JPanel panel_1;
 	private JLabel label_1;
 	private JLabel lblEntrada;
-	private JLabel lblCantidad;
-	private JTextField txtCantidad;
+	private JLabel lblMonto;
+	private JTextField txtMonto;
 	private JLabel lblComentarios;
 	private JButton btnGuardar;
 	private JButton btnCancelar;
 	private JLabel lblNewLabel;
 	GestionCajaDAO gc=new GestionCajaDAO();
+	GestionCajaPruebaDAO gcp=new GestionCajaPruebaDAO();
 	private JTextField txtInfo;
-	private JButton btnIngresar;
-
+	private JLabel lblSelecCaja;
+	GestionCajaEstadoDAO gce=new GestionCajaEstadoDAO();
+	private JComboBox cboNroCaja;
+	private JLabel lblEstado;
+	private JComboBox cboEstado;
 	/**
 	 * Launch the application.
 	 */
@@ -104,23 +116,23 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 		lblEntrada = new JLabel("APERTURA DE CAJA");
 		lblEntrada.setHorizontalAlignment(SwingConstants.LEFT);
 		lblEntrada.setFont(new Font("Roboto Medium", Font.PLAIN, 20));
-		lblEntrada.setBounds(10, 68, 207, 26);
+		lblEntrada.setBounds(133, 23, 207, 26);
 		panel_1.add(lblEntrada);
 		
-		lblCantidad = new JLabel("CANTIDAD:");
-		lblCantidad.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		lblCantidad.setBounds(10, 105, 96, 29);
-		panel_1.add(lblCantidad);
+		lblMonto = new JLabel("Monto:");
+		lblMonto.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		lblMonto.setBounds(10, 146, 96, 29);
+		panel_1.add(lblMonto);
 		
-		txtCantidad = new JTextField();
-		txtCantidad.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		txtCantidad.setColumns(10);
-		txtCantidad.setBounds(66, 145, 87, 26);
-		panel_1.add(txtCantidad);
+		txtMonto = new JTextField();
+		txtMonto.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		txtMonto.setColumns(10);
+		txtMonto.setBounds(66, 186, 87, 26);
+		panel_1.add(txtMonto);
 		
 		lblComentarios = new JLabel("COMENTARIOS:");
 		lblComentarios.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-		lblComentarios.setBounds(10, 192, 168, 29);
+		lblComentarios.setBounds(10, 223, 168, 29);
 		panel_1.add(lblComentarios);
 		
 		btnGuardar = new JButton("Guardar");
@@ -128,7 +140,7 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 		btnGuardar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnGuardar.setIcon(new ImageIcon(frmCajaApertura.class.getResource("/img/Accept256_25070.png")));
 		btnGuardar.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
-		btnGuardar.setBounds(306, 128, 141, 43);
+		btnGuardar.setBounds(306, 105, 141, 43);
 		panel_1.add(btnGuardar);
 		
 		btnCancelar = new JButton("Cancelar");
@@ -136,30 +148,50 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 		btnCancelar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnCancelar.setIcon(new ImageIcon(frmCajaApertura.class.getResource("/img/delete_unapprove_discard_remove_x_red_icon-icons.com_55984.png")));
 		btnCancelar.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
-		btnCancelar.setBounds(306, 208, 141, 43);
+		btnCancelar.setBounds(306, 185, 141, 43);
 		panel_1.add(btnCancelar);
 		
 		lblNewLabel = new JLabel("S/.");
 		lblNewLabel.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(10, 145, 46, 26);
+		lblNewLabel.setBounds(10, 186, 46, 26);
 		panel_1.add(lblNewLabel);
 		
 		txtInfo = new JTextField();
 		txtInfo.setFont(new Font("Roboto Medium", Font.PLAIN, 16));
-		txtInfo.setBounds(10, 232, 182, 26);
+		txtInfo.setBounds(10, 263, 182, 26);
 		panel_1.add(txtInfo);
 		txtInfo.setColumns(10);
 		
-		btnIngresar = new JButton("INGRESAR");
-		btnIngresar.addActionListener(this);
-		btnIngresar.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 16));
-		btnIngresar.setBounds(306, 68, 141, 43);
-		panel_1.add(btnIngresar);
+		lblSelecCaja = new JLabel("Seleccione Caja:");
+		lblSelecCaja.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		lblSelecCaja.setBounds(10, 100, 124, 29);
+		panel_1.add(lblSelecCaja);
+		
+		cboNroCaja = new JComboBox();
+		cboNroCaja.setFont(new Font("Yu Gothic Medium", Font.BOLD, 15));
+		cboNroCaja.setBounds(134, 102, 134, 26);
+		panel_1.add(cboNroCaja);
+		
+		lblEstado = new JLabel("Estado: ");
+		lblEstado.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+		lblEstado.setBounds(9, 60, 124, 29);
+		panel_1.add(lblEstado);
+		
+		cboEstado = new JComboBox();
+		cboEstado.setFont(new Font("Yu Gothic Medium", Font.BOLD, 15));
+		cboEstado.setBounds(133, 62, 135, 26);
+		panel_1.add(cboEstado);
 		setUndecorated(true);
 		setLocationRelativeTo(null);
-		mostrarMontoApertura();
-		habilitar(false);
+		cboEstado();
+		cboNumeroCaja();
+		cboEstado.setSelectedIndex(frmCaja.cod_estado);
+		cboEstado.setEnabled(false);
+		/* Cambiar color al JcomboBox*/
+		UIManager.put( "ComboBox.disabledBackground", new Color(0,0,0,0) );
+		UIManager.put( "ComboBox.disabledForeground", Color.BLACK );
+		
 	}
 
 	public void mouseClicked(MouseEvent arg0) {
@@ -196,42 +228,23 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 	}
 	
 	protected void mouseClickedLabel_1(MouseEvent arg0) {
+		frmCaja cj=new frmCaja();
+		cj.setVisible(true);
+		cj.setLocationRelativeTo(null);
 		this.dispose();
 	}
-	private double leerCantidad(){
-		double cantidad=0;
-		try {
-			if(txtCantidad.getText().trim().length()==0){
-				alerta("Debe ingresar Cantidad de Apertura");
-			}else{
-				cantidad = Double.parseDouble(txtCantidad.getText().trim());
-			}
-		} catch (Exception e) {
-			alerta("Formato incorrecto !!");
-		}
-		return cantidad;
-	}
-
 	private void alerta(String string) {
 		JOptionPane.showMessageDialog(null,string,"ALERTA",2);
 		
 	}
-	private void mostrarMontoApertura(){
-		Caja c=gc.listarMonto();
-		if(c==null){
-			alerta("No se ingreso Monto!");
-		}else{
-			txtCantidad.setText(String.valueOf(c.getMonto()));
-			txtInfo.setText(c.getComentario());
-		}
-	}
+	
 	private double leerMonto(){
 		double monto=0;
 		try{
-		if(txtCantidad.getText().trim().length()==0){
+		if(txtMonto.getText().trim().length()==0){
 			alerta("Debe ingresar Monto de apertura");
 		}else{
-			monto = Double.parseDouble(txtCantidad.getText().trim());
+			monto = Double.parseDouble(txtMonto.getText().trim());
 		}}catch(NumberFormatException e){
 			alerta("Formato incorrecto");
 		}
@@ -246,25 +259,28 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 		}
 		return coment;
 	}
-	private void modificarMonto(){
-		double monto=leerCantidad();
-		String comentario=leerComentario();
-		
-		if(monto==0||comentario==null){
-			alerta("No se ingreso monto");
+	private int leerCboEstado(){
+		int cbo=0;
+		if(cboEstado.getSelectedIndex()==0){
+			alerta("Seleccione estado");
 		}else{
-			Caja c=new Caja();
-			c.setMonto(monto);
-			c.setComentario(comentario);
-			int ok = gc.actualizarMonto(c);
-			if(ok==0){
-				alerta("Error al actualizar usuario !");
-			}else{
-				mensaje("Actualizacion Exitosa !");
-				habilitar(false);
-			}	
+			cbo = cboEstado.getSelectedIndex();
 		}
+		return cbo;
 	}
+	private int leerCboNroCaja(){
+		int cbo=0;
+		if(cboNroCaja.getSelectedIndex()==0){
+			alerta("Seleccione Nro. de caja");
+		}else{
+			cbo = cboNroCaja.getSelectedIndex();
+		}
+		return cbo;
+	}
+	private int obtenerIdUsuario(){
+		return frmLogin.u.getIdUsuario();
+	}
+	
 	private void mensaje(String s){
 		JOptionPane.showMessageDialog(null, s);
 	}
@@ -272,25 +288,94 @@ public class frmCajaApertura extends JDialog implements MouseListener, MouseMoti
 		if (e.getSource() == btnCancelar) {
 			actionPerformedBtnCancelar(e);
 		}
-		if (e.getSource() == btnIngresar) {
-			actionPerformedBtnIngresar(e);
-		}
 		if (e.getSource() == btnGuardar) {
 			actionPerformedBtnGuardar(e);
 		}
 	}
 	protected void actionPerformedBtnGuardar(ActionEvent e) {
-		modificarMonto();
+		/*IngresarMontoApertura();*/
+		aperturaCaja();
+		
 	}
-	private void habilitar(boolean tof){
-		txtCantidad.setEditable(tof);
-		txtInfo.setEditable(tof);
-	}
-	protected void actionPerformedBtnIngresar(ActionEvent e) {
-		habilitar(true);
-		txtCantidad.requestFocus();
-	}
+	
 	protected void actionPerformedBtnCancelar(ActionEvent e) {
+		frmPrincipalEmp cp= new frmPrincipalEmp();
+		cp.setVisible(true);
+		cp.setLocationRelativeTo(null);
 		this.dispose();
+	}
+	private void aperturaCaja(){
+		double monto = leerMonto();
+		int idUser = obtenerIdUsuario(),cbo=leerCboEstado(),cboCaja=leerCboNroCaja();
+		String info = leerComentario();
+		/*if(cbo==1){
+			alerta("No se puede seleccionar el estado CERRADO al aperturar una caja");
+			limpiarCampos(true);
+			return;
+		}else */if(monto==0||info==null||cbo==0){
+			alerta("No se pudo ingresar monto");
+		}else{
+			Caja c=new Caja(cboCaja, 2, null);
+			CajaApertura cm=new CajaApertura(monto, cboCaja, idUser, 2, null, info);
+			int ok=gcp.aperturaCaja(c, cm);
+			if(ok==0)alerta("error en apertura de caja");
+			else mensaje("Caja Aperturada");
+			this.dispose();
+			frmPrincipalEmp pri=new frmPrincipalEmp();
+			pri.setVisible(true);
+			pri.setLocationRelativeTo(null);
+		}
+	}
+	/*private void IngresarMontoApertura(){
+		double monto = leerMonto();
+		int idUser = obtenerIdUsuario(),cbo=leerCboEstado(),cboCaja=leerCboNroCaja();
+		String info = leerComentario();
+		if(cbo==1){
+			alerta("No se puede seleccionar el estado CERRADO al aperturar una caja");
+			limpiarCampos(true);
+			return;
+		}
+		else if(monto==0||info==null||cbo==0){
+			alerta("No se pudo ingresar monto");
+		}else{
+			CajaMonto cm=new CajaMonto();
+			cm.setMonto(monto);
+			cm.setComentario(info);
+			cm.setIdUsuario(idUser);
+			cm.setCod_estado(cbo);
+			cm.setIdCaja(cboCaja);
+			int ok = gc.registarMontoApertura(cm);
+			if(ok==0){
+				alerta("Error al ingresar monto de apertura !");
+			}else{
+				mensaje("Caja Aperturada !");
+				limpiarCampos(true);
+				this.dispose();
+				frmPrincipalEmp pri=new frmPrincipalEmp();
+				pri.setVisible(true);
+				pri.setLocationRelativeTo(null);
+			}
+		}
+	}*/
+	private void cboEstado(){
+		cboEstado.addItem("Elegir");
+		ArrayList<CajaEstado>listar=gce.listarEstado();
+		for (CajaEstado ce : listar) {
+			cboEstado.addItem(ce.getDes_estado());
+		}
+	}
+	public void cboNumeroCaja(){
+		cboNroCaja.addItem("Elegir Caja");
+		ArrayList<Caja>listar=gcp.listar();
+		for (Caja c : listar) {
+			cboNroCaja.addItem(c.getIdCaja());
+		}
+	}
+	private void limpiarCampos(Boolean tof){
+		txtMonto.setText("");
+		cboNroCaja.setSelectedIndex(0);
+		txtMonto.requestFocus();
+		txtInfo.setText("");
+		
 	}
 }

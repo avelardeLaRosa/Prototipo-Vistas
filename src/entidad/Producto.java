@@ -4,7 +4,7 @@ public class Producto {
 	
 	private int idProducto,cantidad, idCategoria, idProveedor;
 	private double precio;
-	private String nombre, des_categoria, des_proveedor;
+	private String nombre, des_categoria, des_proveedor,eliminado;
 
 	public Producto(){};
 	
@@ -43,7 +43,13 @@ public class Producto {
 	public void setDes_proveedor(String des_proveedor) {
 		this.des_proveedor = des_proveedor;
 	}
-	
+	public String getEliminado() {
+		return eliminado;
+	}
+
+	public void setEliminado(String eliminado) {
+		this.eliminado = eliminado;
+	}
 	
 	
 	

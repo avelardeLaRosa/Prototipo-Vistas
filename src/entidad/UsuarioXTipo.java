@@ -3,9 +3,11 @@ package entidad;
 public class UsuarioXTipo {
 	
 	private int idUsuario,idtipo;
-	private String nombre,apellido,usuario,clave,fecha_registro,fecha_eliminacion,des_tipo;
+	private String nombre,apellido,usuario,clave,fecha_registro,eliminado,fecha_eliminacion,des_tipo;
 
 
+
+	
 
 	public UsuarioXTipo(){}
 	
@@ -47,5 +49,12 @@ public class UsuarioXTipo {
 
 	public void setDes_tipo(String des_tipo) {
 		this.des_tipo = des_tipo;
+	}
+	public String getEliminado() {
+		return eliminado;
+	}
+
+	public void setEliminado(String eliminado) {
+		this.eliminado = eliminado;
 	}
 }

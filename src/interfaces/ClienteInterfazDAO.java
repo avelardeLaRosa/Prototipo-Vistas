@@ -11,5 +11,6 @@ public interface ClienteInterfazDAO {
 	public int eliminar(int codigo);
 	public ArrayList <Cliente> listar();
 	public ArrayList<Cliente> listarClientexDNI(String nro);
+	public ArrayList<Cliente>listarXId(int xid);
 	
 }

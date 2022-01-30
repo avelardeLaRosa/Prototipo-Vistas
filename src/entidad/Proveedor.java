@@ -2,8 +2,10 @@ package entidad;
 
 public class Proveedor {
 	private int idProveedor;
-	private String ruc,nombre,direccion,telefono,informacion,contacto;
+	private String ruc,nombre,direccion,telefono,informacion,contacto,eliminado;
 	
+	
+
 	public Proveedor(){};
 	
 	public int getIdProveedor() {
@@ -60,6 +62,13 @@ public class Proveedor {
 
 	public void setContacto(String contacto) {
 		this.contacto = contacto;
+	}
+	public String getEliminado() {
+		return eliminado;
+	}
+
+	public void setEliminado(String eliminado) {
+		this.eliminado = eliminado;
 	}
 
 	

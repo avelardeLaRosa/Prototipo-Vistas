@@ -24,7 +24,7 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 		
 		try {
 			con = MySQLConexion8.getConexion();
-			sql = "insert into usuario values (null,?,?,?,?,curdate(),null,?)";
+			sql = "insert into usuario values (null,?,?,?,?,curdate(),'No',null,?)";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1,u.getNombre());
 			pstm.setString(2, u.getApellido());
@@ -51,7 +51,7 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 		PreparedStatement pstm=null;
 		try {
 			con = MySQLConexion8.getConexion();
-			String sql = "update usuario set nombre=?,apellido=?,usuario=?,clave=?,fecha_registro=?,idtipo = ? where idUsuario = ?";
+			String sql = "update usuario set nombre= ?,apellido=?,usuario=?,clave=?,fecha_registro=?,idtipo = ? where idUsuario = ? and eliminado = 'No'";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1,u.getNombre());
 			pstm.setString(2, u.getApellido());
@@ -60,11 +60,10 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 			pstm.setString(5, u.getFecha_registro());
 			pstm.setInt(6, u.getIdtipo());
 			pstm.setInt(7, u.getIdUsuario());
-			
 			estado = pstm.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("Error <<< en la instruccion de actualizacion " + e.getMessage());
-		}finally {
+		}finally{
 			try {
 				if(con!=null)con.close();
 				if(pstm!=null)pstm.close();
@@ -83,7 +82,7 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 		PreparedStatement pstm=null;
 		try{
 		con = MySQLConexion8.getConexion();
-		String sql = "delete from usuario where idusuario=?";
+		String sql = "update usuario set eliminado = 'Si',fecha_eliminacion = curdate() where idusuario=? and eliminado = 'No'";
 		pstm = con.prepareStatement(sql);
 		pstm.setInt(1,id);
 		estado = pstm.executeUpdate();
@@ -123,13 +122,14 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 				ut.setUsuario(res.getString(4));
 				ut.setClave(res.getString(5));
 				ut.setFecha_registro(res.getString(6));
-				ut.setFecha_eliminacion(res.getString(7));
-				ut.setIdtipo(res.getInt(8));
-				ut.setDes_tipo(res.getString(9));
+				ut.setEliminado(res.getString(7));
+				ut.setFecha_eliminacion(res.getString(8));
+				ut.setIdtipo(res.getInt(9));
+				ut.setDes_tipo(res.getString(10));
 				user.add(ut);
 			}
 		} catch (Exception e) {
-			System.out.println("Error <<< en la instruccion de registro " + e.getMessage());
+			System.out.println("Error <<< en la instruccion de listado de usuario " + e.getMessage());
 		}finally {
 			try {
 				if(con!=null){con.close();}
@@ -152,7 +152,7 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 		
 		try {
 			con = MySQLConexion8.getConexion();
-			String sql = "call consultarId(?)";
+			String sql = "call bdtienda.consultarId(?)";
 			pstm = con.prepareStatement(sql);
 			pstm.setInt(1, id);
 			res = pstm.executeQuery();
@@ -165,11 +165,13 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 				u.setUsuario(res.getString(4));
 				u.setClave(res.getString(5));
 				u.setFecha_registro(res.getString(6));
-				u.setIdtipo(res.getInt(7));
+				u.setEliminado(res.getString(7));
+				u.setFecha_eliminacion(res.getString(8));
+				u.setIdtipo(res.getInt(9));
 				listarId.add(u);
 			}
 		} catch (Exception e) {
-			System.out.println("Error <<< en la instruccion de registro " + e.getMessage());
+			System.out.println("Error <<< en la instruccion de listado por tipo " + e.getMessage());
 		}finally{
 			try {
 				if(con!=null)con.close();
@@ -212,11 +214,12 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 				u.setUsuario(res.getString(4));
 				u.setClave(res.getString(5));
 				u.setFecha_registro(res.getString(6));
-				u.setFecha_eliminacion(res.getString(7));
-				u.setIdtipo(res.getInt(8));
+				u.setEliminado(res.getString(7));
+				u.setFecha_eliminacion(res.getString(8));
+				u.setIdtipo(res.getInt(9));
 			}
 		} catch (Exception e) {
-			System.out.println("Eror en validar acceso" + e.getMessage());
+			System.out.println("Error en validar acceso " + e.getMessage());
 		}finally {
 			try {
 				if(res !=null)
@@ -254,13 +257,14 @@ public class GestionUsuarioDAO implements UsuarioInterfazDAO{
 				ut.setUsuario(res.getString(4));
 				ut.setClave(res.getString(5));
 				ut.setFecha_registro(res.getString(6));
-				ut.setFecha_eliminacion(res.getString(7));
-				ut.setIdtipo(res.getInt(8));
-				ut.setDes_tipo(res.getString(9));
+				ut.setEliminado(res.getString(7));
+				ut.setFecha_eliminacion(res.getString(8));
+				ut.setIdtipo(res.getInt(9));
+				ut.setDes_tipo(res.getString(10));
 				listarTipo.add(ut);
 			}
 		} catch (Exception e) {
-			System.out.println("Error <<< en la instruccion de registro " + e.getMessage());
+			System.out.println("Error <<< en la instruccion de listado por tipo " + e.getMessage());
 		}finally{
 			try {
 				if(con!=null)con.close();

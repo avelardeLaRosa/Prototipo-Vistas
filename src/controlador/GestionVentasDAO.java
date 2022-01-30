@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import entidad.CabeceraVenta;
 import entidad.DetalleVenta;
+import entidad.Usuario;
 import interfaces.VentasInterfazDAO;
 import utils.MySQLConexion8;
 
@@ -60,17 +61,16 @@ public class GestionVentasDAO implements VentasInterfazDAO {
 			//PASO 2: desactivar la confirmacion automatica
 			con.setAutoCommit(false);
 			//paso 3: instruccion 1 - registro de la tb_cabeceraBoleta
-			String sql1 = "insert into cab_venta values(?,?,?,?,?,?)";
+			String sql1 = "insert into cab_venta values(?,CURRENT_TIMESTAMP(),?,?,?,?)";
 			//PASEO 3: CREAR EL OBJETO PST 1 Y ENVIAR INSTRUCCION SQL 1
 			pstm1 = con.prepareStatement(sql1);
 			//PASO 4: PARAMETROS 1
 			//codigo -- null porque esta autoincremento en la base de datos
 			pstm1.setString(1, cVent.getNum_bol());
-			pstm1.setString(2, cVent.getFecha_bol());
-			pstm1.setInt(3, cVent.getIdCliente());
-			pstm1.setInt(4, cVent.getIdCaja());
-			pstm1.setDouble(5, cVent.getTotal_bol());
-			pstm1.setInt(6, cVent.getIdUsuario());
+			pstm1.setInt(2, cVent.getIdCliente());
+			pstm1.setInt(3, cVent.getIdCaja());
+			pstm1.setDouble(4, cVent.getTotal_bol());
+			pstm1.setInt(5, cVent.getIdUsuario());
 			//PASO 5: EJECUTAR INSTRUCCION 1
 			estado = pstm1.executeUpdate();
 			
@@ -122,6 +122,83 @@ public class GestionVentasDAO implements VentasInterfazDAO {
 		
 		
 		return estado;
+	}
+
+	@Override
+	public ArrayList<DetalleVenta> listarDetalles(String numbol) {
+		ArrayList<DetalleVenta>listar=new ArrayList<DetalleVenta>();
+		
+		Connection con=null;
+		PreparedStatement pstm=null;
+		ResultSet res=null;
+		
+		try {
+			con = MySQLConexion8.getConexion();
+			String sql = "SELECT * FROM bdtienda.detalle_venta where num_bol = ?";
+			pstm = con.prepareStatement(sql);
+			pstm.setString(1, numbol);
+			res = pstm.executeQuery();
+			DetalleVenta dv;
+			while(res.next()){
+				dv = new DetalleVenta();
+				dv.setPrecio(res.getDouble(1));
+				dv.setCantidad(res.getInt(2));
+				dv.setIdProducto(res.getInt(3));
+				dv.setNum_bol(res.getString(4));
+				listar.add(dv);
+			}
+		} catch (Exception e) {
+			System.out.println("Error <<< en la instruccion reporte detalle de venta " + e.getMessage());
+		}finally{
+			try {
+				if(con!=null)con.close();
+				if(pstm!=null)pstm.close();
+				if(res!=null)res.close();
+			} catch (SQLException e2) {
+				System.out.println("Error <<< en la base de datos " + e2.getMessage());
+			}
+		}
+		
+		
+		return listar;
+	}
+
+	@Override
+	public ArrayList<DetalleVenta> listar() {
+		ArrayList<DetalleVenta>listar=new ArrayList<DetalleVenta>();
+		
+		Connection con=null;
+		PreparedStatement pstm=null;
+		ResultSet res=null;
+		
+		try {
+			con = MySQLConexion8.getConexion();
+			String sql = "SELECT * FROM bdtienda.detalle_venta";
+			pstm = con.prepareStatement(sql);
+			res = pstm.executeQuery();
+			DetalleVenta dv;
+			while(res.next()){
+				dv = new DetalleVenta();
+				dv.setPrecio(res.getDouble(1));
+				dv.setCantidad(res.getInt(2));
+				dv.setIdProducto(res.getInt(3));
+				dv.setNum_bol(res.getString(4));
+				listar.add(dv);
+			}
+		} catch (Exception e) {
+			System.out.println("Error <<< en la instruccion listar detalle de venta" + e.getMessage());
+		}finally{
+			try {
+				if(con!=null)con.close();
+				if(pstm!=null)pstm.close();
+				if(res!=null)res.close();
+			} catch (SQLException e2) {
+				System.out.println("Error <<< en la base de datos " + e2.getMessage());
+			}
+		}
+		
+		
+		return listar;
 	}
 	}
 

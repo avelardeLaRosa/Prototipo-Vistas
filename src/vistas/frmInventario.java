@@ -139,6 +139,7 @@ public class frmInventario extends JDialog implements MouseListener, MouseMotion
 		scrollPane.setViewportView(tblInventario);
 		
 		button = new Button("Actualizar Tabla");
+		button.addActionListener(this);
 		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		button.setFont(new Font("Roboto Medium", Font.BOLD, 14));
 		button.setBounds(252, 309, 177, 22);
@@ -262,6 +263,9 @@ public class frmInventario extends JDialog implements MouseListener, MouseMotion
 		pri.setLocationRelativeTo(null);
 	}
 	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == button) {
+			actionPerformedButton(arg0);
+		}
 		if (arg0.getSource() == cboInventario) {
 			actionPerformedCboInventario(arg0);
 		}
@@ -332,8 +336,15 @@ public class frmInventario extends JDialog implements MouseListener, MouseMotion
 	void listarXIdProducto(int id){
 		model.setRowCount(0);
 		ArrayList<Producto>listar = gp.listarXIdPro(id);
-		if(listar.size()==0){
+		if(id==0){
+			txtCodigo.setText("");
+			listarProductos();
+			return;
+		}
+		else if(listar.size()==0){
 			alerta("Producto no Existe");
+			txtCodigo.setText("");
+			
 			listarProductos();
 		}else{
 			for(Producto p: listar){
@@ -354,6 +365,7 @@ public class frmInventario extends JDialog implements MouseListener, MouseMotion
 		ArrayList<Producto>listar = gp.listarXCat(idCat);
 		if(listar.size()==0){
 			alerta("Producto no Existe");
+			cboInventario.setSelectedIndex(0);
 			listarProductos();
 		}else{
 			for(Producto p: listar){
@@ -362,9 +374,10 @@ public class frmInventario extends JDialog implements MouseListener, MouseMotion
 					p.getNombre(),
 					p.getCantidad(),
 					"s/. " + p.getPrecio(),
-					p.getDes_categoria()
+					p.getDes_categoria(),
+					p.getDes_proveedor()
 			};
-			cboInventario.setSelectedIndex(0);
+			
 			model.addRow(fila);
 		}
 			}
@@ -382,7 +395,9 @@ public class frmInventario extends JDialog implements MouseListener, MouseMotion
 	}
 	private void listarXCat(){
 		int id = leerCategoria();
+		
 		switch (id) {
+		case 0: break;
 		case 1: listarXCategoria(id);break;
 		case 2: listarXCategoria(id);break;
 		case 3: listarXCategoria(id);break;
@@ -392,11 +407,16 @@ public class frmInventario extends JDialog implements MouseListener, MouseMotion
 		case 7: listarXCategoria(id);break;
 		case 8: listarXCategoria(id);break;
 		case 9: listarXCategoria(id);break;
-		default:
+		default:listarXCategoria(id);
 			break;
 		}
 	}
 	protected void actionPerformedCboInventario(ActionEvent arg0) {
 		listarXCat();
+		
+	}
+	protected void actionPerformedButton(ActionEvent arg0) {
+		listarProductos();
+		cboInventario.setSelectedIndex(0);
 	}
 }

@@ -51,6 +51,7 @@ public class frmEliminarProduct extends JDialog implements MouseListener, MouseM
 	private JLabel label_3;
 	DefaultTableModel model=new DefaultTableModel();
 	GestionProductoDAO gp=new GestionProductoDAO();
+	
 	/**
 	 * Launch the application.
 	 */
@@ -84,6 +85,8 @@ public class frmEliminarProduct extends JDialog implements MouseListener, MouseM
 		panel.setLayout(null);
 		
 		panel_1 = new JPanel();
+		panel_1.addMouseMotionListener(this);
+		panel_1.addMouseListener(this);
 		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_1.setBounds(10, 0, 430, 350);
 		panel.add(panel_1);
@@ -185,6 +188,9 @@ public class frmEliminarProduct extends JDialog implements MouseListener, MouseM
 	public void mouseExited(MouseEvent e) {
 	}
 	public void mousePressed(MouseEvent e) {
+		if (e.getSource() == panel_1) {
+			mousePressedPanel_1(e);
+		}
 		if (e.getSource() == panel) {
 			mousePressedPanel(e);
 		}
@@ -196,6 +202,9 @@ public class frmEliminarProduct extends JDialog implements MouseListener, MouseM
 		yMouse = e.getY();
 	}
 	public void mouseDragged(MouseEvent arg0) {
+		if (arg0.getSource() == panel_1) {
+			mouseDraggedPanel_1(arg0);
+		}
 		if (arg0.getSource() == panel) {
 			mouseDraggedPanel(arg0);
 		}
@@ -303,5 +312,14 @@ public class frmEliminarProduct extends JDialog implements MouseListener, MouseM
 	protected void mouseClickedTblInventario(MouseEvent e) {
 		int pos=tblInventario.getSelectedRow();
 		mostrarCodigo(pos);
+	}
+	protected void mousePressedPanel_1(MouseEvent e) {
+		xMouse = e.getX();
+		xMouse = e.getY();
+	}
+	protected void mouseDraggedPanel_1(MouseEvent arg0) {
+		int x = arg0.getXOnScreen();
+		int y = arg0.getYOnScreen();
+		this.setLocation(x-xMouse,y-yMouse);
 	}
 }

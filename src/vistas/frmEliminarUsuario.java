@@ -204,13 +204,13 @@ public class frmEliminarUsuario extends JDialog implements MouseListener, Action
 	private void eliminarUsuario(int xid){
 		int boton,id;
 		id = leerId();
-		boton = JOptionPane.showConfirmDialog(null,"¿Seguro de eliminar USUARIO?","SISTEMA",JOptionPane.YES_NO_OPTION);
+		boton = JOptionPane.showConfirmDialog(null,"¿Dar de baja a este usuario?","SISTEMA",JOptionPane.YES_NO_OPTION);
 		if(boton==0){
 			int ok = gu.eliminar(id);
 			if(ok==0){
 				alerta("Error al eliminar usuario");
 			}else{
-				mensaje("Se elimino Usuario");
+				mensaje("Usuario dado de baja");
 				listarUsuario();
 			}		
 		}
@@ -239,7 +239,7 @@ public class frmEliminarUsuario extends JDialog implements MouseListener, Action
 		}
 	}
 	private void listarUsuario(){
-		//model.setRowCount(0);
+		model.setRowCount(0);
 		ArrayList<UsuarioXTipo>listarUser=gu.listarUsuario();
 		if(listarUser.size()==0){
 			alerta("No existen usuarios !");

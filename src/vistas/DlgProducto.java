@@ -10,6 +10,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableRowSorter;
 
 import controlador.GestionProductoDAO;
 import entidad.Producto;
@@ -23,22 +25,26 @@ import java.awt.Image;
 import java.util.ArrayList;
 
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
-public class DlgProducto extends JDialog implements ActionListener {
+public class DlgProducto extends JDialog implements ActionListener, KeyListener, MouseListener {
 
 	private final JPanel contentPanel = new JPanel();
-	private JTextField txtNomPro;
+	private JTextField txtBuscarPro;
 	private JTable tblProducto;
 	DefaultTableModel model=new DefaultTableModel();
 	GestionProductoDAO gp=new GestionProductoDAO();
-	private JButton button;
-	private JButton button_1;
 	private JButton okButton;
 	private JButton cancelButton;
+	TableRowSorter<DefaultTableModel> sorter;
 
 	/**
 	 * Launch the application.
@@ -63,27 +69,21 @@ public class DlgProducto extends JDialog implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		{
-			JLabel lblProducto = new JLabel("Producto");
+			JLabel lblProducto = new JLabel("Buscar Producto");
 			lblProducto.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-			lblProducto.setBounds(10, 11, 65, 29);
+			lblProducto.setBounds(10, 11, 129, 29);
 			contentPanel.add(lblProducto);
 		}
 		{
-			txtNomPro = new JTextField();
-			txtNomPro.setFont(new Font("Roboto Light", Font.PLAIN, 16));
-			txtNomPro.setColumns(10);
-			txtNomPro.setBounds(85, 13, 168, 26);
-			contentPanel.add(txtNomPro);
+			txtBuscarPro = new JTextField();
+			txtBuscarPro.addKeyListener(this);
+			txtBuscarPro.setFont(new Font("Roboto Light", Font.PLAIN, 16));
+			txtBuscarPro.setColumns(10);
+			txtBuscarPro.setBounds(138, 12, 168, 26);
+			contentPanel.add(txtBuscarPro);
 		}
 		{
-			button = new JButton("");
-			button.addActionListener(this);
-			button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			button.setBounds(266, 11, 40, 29);
 			ImageIcon icoBuscar=new ImageIcon(getClass().getResource("/img/search_icon-icons.com_74448.png"));
-			ImageIcon imgBuscar=new ImageIcon(icoBuscar.getImage().getScaledInstance(button.getWidth(), button.getHeight(), Image.SCALE_SMOOTH));
-			button.setIcon(imgBuscar);
-			contentPanel.add(button);
 		}
 		{
 			JScrollPane scrollPane = new JScrollPane();
@@ -95,6 +95,7 @@ public class DlgProducto extends JDialog implements ActionListener {
 					public boolean isCellEditable(int rowIndex,int columnIndex){
 						return false;}
 				};
+				tblProducto.addMouseListener(this);
 				model.addColumn("Codigo");
 				model.addColumn("Producto");
 				model.addColumn("Precio");
@@ -102,15 +103,12 @@ public class DlgProducto extends JDialog implements ActionListener {
 				tblProducto.setModel(model);
 				tblProducto.setFillsViewportHeight(true);
 				scrollPane.setViewportView(tblProducto);
+				//FILTRAR JTABLE
+				tblProducto.setAutoCreateRowSorter(true);
+				sorter = new TableRowSorter<>(model);
+				tblProducto.setRowSorter(sorter);
+				//
 			}
-		}
-		{
-			button_1 = new JButton("");
-			button_1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			button_1.addActionListener(this);
-			button_1.setIcon(new ImageIcon(DlgProducto.class.getResource("/img/arrow_refresh_15732.png")));
-			button_1.setBounds(316, 11, 40, 29);
-			contentPanel.add(button_1);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -133,6 +131,7 @@ public class DlgProducto extends JDialog implements ActionListener {
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
+			ajustarAnchoColumnas();
 		}
 		listarProdutos();
 	}
@@ -142,7 +141,7 @@ public class DlgProducto extends JDialog implements ActionListener {
 			Object [] fila={
 					p.getIdProducto(),
 					p.getNombre(),
-					"S/. " + p.getPrecio(),
+					p.getPrecio(),
 					p.getCantidad()
 			};
 			model.addRow(fila);
@@ -158,7 +157,7 @@ public class DlgProducto extends JDialog implements ActionListener {
 				Object [] fila={
 						p.getIdProducto(),
 						p.getNombre(),
-						"S/. "+p.getPrecio(),
+						p.getPrecio(),
 						p.getCantidad()
 				};
 				model.addRow(fila);
@@ -171,10 +170,10 @@ public class DlgProducto extends JDialog implements ActionListener {
 	}
 	private String leerNomPro(){
 		String nomPro=null;
-		if(txtNomPro.getText().trim().length()==0){
+		if(txtBuscarPro.getText().trim().length()==0){
 			alerta("Campo Vacio");
 		}else{
-			nomPro = txtNomPro.getText().trim();
+			nomPro = txtBuscarPro.getText().trim();
 		}
 		return nomPro;
 	}
@@ -185,18 +184,6 @@ public class DlgProducto extends JDialog implements ActionListener {
 		if (arg0.getSource() == okButton) {
 			actionPerformedOkButton(arg0);
 		}
-		if (arg0.getSource() == button_1) {
-			actionPerformedButton_1(arg0);
-		}
-		if (arg0.getSource() == button) {
-			actionPerformedButton(arg0);
-		}
-	}
-	protected void actionPerformedButton(ActionEvent arg0) {
-		buscarXNombreProducto(leerNomPro());
-	}
-	protected void actionPerformedButton_1(ActionEvent arg0) {
-		listarProdutos();
 	}
 	protected void actionPerformedOkButton(ActionEvent arg0) {
 		enviarDatos();
@@ -206,20 +193,83 @@ public class DlgProducto extends JDialog implements ActionListener {
 		String cod,nom,stock,precio;
 		
 		fila=tblProducto.getSelectedRow();
+		if(fila == -1) {
+			alerta("Debe seleccionar un Producto");
+		}
+		else {
+			cod = tblProducto.getValueAt(fila, 0).toString();
+			nom = tblProducto.getValueAt(fila, 1).toString();
+			precio = tblProducto.getValueAt(fila, 2).toString();
+			stock = tblProducto.getValueAt(fila, 3).toString();
+			
+			frmVenta.txtCodPro.setText(cod);
+			frmVenta.txtNomPro.setText(nom);
+			frmVenta.txtStockPro.setText(stock);
+			frmVenta.txtPrecioPro.setText(precio);
+			
+			this.dispose();
+		}
 		
-		cod = tblProducto.getValueAt(fila, 0).toString();
-		nom = tblProducto.getValueAt(fila, 1).toString();
-		stock = tblProducto.getValueAt(fila, 2).toString();
-		precio = tblProducto.getValueAt(fila, 3).toString();
-		
-		frmVenta.txtCodPro.setText(cod);
-		frmVenta.txtNomPro.setText(nom);
-		frmVenta.txtStockPro.setText(stock);
-		frmVenta.txtPrecioPro.setText(precio);
-		
-		this.dispose();
 	}
 	protected void actionPerformedCancelButton(ActionEvent arg0) {
 		this.dispose();
+	}
+	
+	private String buscarPro(){
+		String id = txtBuscarPro.getText().trim();
+		return id;
+	}
+	
+	void filtrar() {
+		String pro = buscarPro();		
+		try {
+			sorter.setRowFilter(RowFilter.regexFilter("(?i)"+pro, 1));
+			
+		} catch (Exception e2) {
+			alerta("Error: " + e2);
+		}
+	}
+	
+	public void keyPressed(KeyEvent e) {
+	}
+	public void keyReleased(KeyEvent e) {
+	}
+	public void keyTyped(KeyEvent e) {
+		if (e.getSource() == txtBuscarPro) {
+			do_txtBuscarPro_keyTyped(e);
+		}
+	}
+	protected void do_txtBuscarPro_keyTyped(KeyEvent e) {
+		filtrar();
+	}
+	public void mouseClicked(MouseEvent e) {
+	}
+	public void mouseEntered(MouseEvent e) {
+		if (e.getSource() == tblProducto) {
+			do_tblProducto_mouseEntered(e);
+		}
+	}
+	public void mouseExited(MouseEvent e) {
+	}
+	public void mousePressed(MouseEvent e) {
+	}
+	public void mouseReleased(MouseEvent e) {
+	}
+	protected void do_tblProducto_mouseEntered(MouseEvent e) {
+		tblProducto.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	}
+	
+	void ajustarAnchoColumnas() {
+		TableColumnModel tcm = tblProducto.getColumnModel();
+		//Ocultar Codigo de usuario
+		tblProducto.getColumnModel().getColumn(0).setMaxWidth(0);
+		tblProducto.getColumnModel().getColumn(0).setMinWidth(0);
+		tblProducto.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(0);
+		tblProducto.getTableHeader().getColumnModel().getColumn(0).setMinWidth(0);
+		//fin de codigo
+		//tcm.getColumn(0).setPreferredWidth(anchoColumna(9));  // Codigo
+		tcm.getColumn(1).setPreferredWidth(100);  // producto
+		tcm.getColumn(2).setPreferredWidth(10);  // precio
+		tcm.getColumn(3).setPreferredWidth(10);  // Stock
 	}
 }

@@ -20,7 +20,7 @@ public class GestionClienteDAO implements ClienteInterfazDAO{
 				
 				try {
 					con = MySQLConexion8.getConexion();
-					String sql = "insert into cliente values(null ,? ,? , ?, ?, ?)";
+					String sql = "insert into cliente values(null ,? ,? , ?, ?, ?,'No')";
 					pstm = con.prepareStatement(sql);
 					pstm.setString(1, c.getNombre());
 					pstm.setString(2, c.getApellido());
@@ -56,7 +56,7 @@ public class GestionClienteDAO implements ClienteInterfazDAO{
 		ResultSet res = null;
 		try {
 			con = MySQLConexion8.getConexion();
-			String sql = "SELECT * FROM cliente";
+			String sql = "SELECT * FROM cliente where eliminado = 'No'";
 			pstm = con.prepareStatement(sql);
 			res = pstm.executeQuery();
 			Cliente c;
@@ -68,6 +68,7 @@ public class GestionClienteDAO implements ClienteInterfazDAO{
 				c.setDni(res.getString(4));
 				c.setTelefono(res.getString(5));
 				c.setCorreo(res.getString(6));
+				c.setEliminado(res.getString(7));
 				lista.add(c);
 			}
 				
@@ -99,7 +100,7 @@ public class GestionClienteDAO implements ClienteInterfazDAO{
 		PreparedStatement pstm = null;		
 		try {
 			con = MySQLConexion8.getConexion();
-			String sql = "update cliente set nombre = ?, apellido = ?, dni= ? , telefono = ?, correo = ? where idCliente = ?";
+			String sql = "update cliente set nombre = ?, apellido = ?, dni= ? , telefono = ?, correo = ? where idCliente = ? and eliminado = 'No'";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, c.getNombre());
 			pstm.setString(2, c.getApellido());
@@ -135,7 +136,7 @@ public class GestionClienteDAO implements ClienteInterfazDAO{
 		ResultSet res = null;
 		try {
 			con = MySQLConexion8.getConexion();
-			String sql = "select * from cliente where dni = ?";
+			String sql = "select * from cliente where dni = ? and eliminado = 'No'";
 			pstm = con.prepareStatement(sql);
             pstm.setString(1, nro);
 			 res = pstm.executeQuery();
@@ -175,7 +176,7 @@ public class GestionClienteDAO implements ClienteInterfazDAO{
 				PreparedStatement pstm = null;
 				try {
 					con = MySQLConexion8.getConexion();
-					String sql = "delete from cliente where idCliente = ?";
+					String sql = "update cliente set eliminado = 'Si' where idCliente = ? and eliminado = 'No'";
 					pstm = con.prepareStatement(sql);
 					pstm.setInt(1, codigo);
 					estado = pstm.executeUpdate();
@@ -196,6 +197,46 @@ public class GestionClienteDAO implements ClienteInterfazDAO{
 					}
 				}
 				return estado;			
+	}
+
+
+	@Override
+	public ArrayList<Cliente> listarXId(int xid) {
+		ArrayList<Cliente> listar = new ArrayList<Cliente>();
+		Connection con = null;
+		PreparedStatement pstm = null;
+		ResultSet res = null;
+		try {
+			con = MySQLConexion8.getConexion();
+			String sql = "select * from cliente where idCliente = ? and eliminado = 'No'";
+			pstm = con.prepareStatement(sql);
+            pstm.setInt(1, xid);
+			 res = pstm.executeQuery();
+			 Cliente c;
+			 while(res.next()) {
+				 c = new Cliente();
+				 c.setIdCliente(res.getInt(1));
+				 c.setNombre(res.getString(2));
+				 c.setApellido(res.getString(3));
+				 c.setDni(res.getString(4));
+				 c.setTelefono(res.getString(5));
+				 c.setCorreo(res.getString(6));
+				 listar.add(c);
+			 }
+			 			
+		} catch (Exception e) {
+			System.out.println("Error en la sentencia listar usuario" + e.getMessage());
+		}finally {
+			try {
+				if(res != null) res.close();
+				if(pstm != null) pstm.close();
+				if(con != null) con.close();
+				
+			} catch (SQLException e2) {
+				System.out.println("Error al cerrar la base de datos" + e2.getMessage());
+			}
+		}	
+		return listar ;
 	}
 	
 	

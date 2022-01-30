@@ -20,13 +20,14 @@ public class GestionProductoDAO implements ProductoInterfazDAO{
 		PreparedStatement pstm=null;
 		try {
 			con = MySQLConexion8.getConexion();
-			String sql = "insert into producto values (null,?,?,?,?,?)";
+			String sql = "insert into producto values (null,?,?,?,?,?,'No')";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, p.getNombre());
 			pstm.setInt(2, p.getCantidad());
 			pstm.setDouble(3, p.getPrecio());
 			pstm.setInt(4, p.getIdCategoria());
 			pstm.setInt(5, p.getIdProveedor());
+			
 			estado = pstm.executeUpdate();
 			
 		} catch (Exception e) {
@@ -50,7 +51,7 @@ public class GestionProductoDAO implements ProductoInterfazDAO{
 		String sql=null;
 		try {
 			con = MySQLConexion8.getConexion();
-			sql = "UPDATE producto SET nombre = ?, cantidad = ?, precio = ?, idCategoria = ?, idProveedor = ? WHERE idProducto = ?";
+			sql = "UPDATE producto SET nombre = ?, cantidad = ?, precio = ?, idCategoria = ?, idProveedor = ? WHERE idProducto = ? and eliminado = 'No'";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1, p.getNombre());
 			pstm.setInt(2, p.getCantidad());
@@ -80,7 +81,7 @@ public class GestionProductoDAO implements ProductoInterfazDAO{
 		PreparedStatement pstm=null;
 		try{
 		con = MySQLConexion8.getConexion();
-		String sql = "delete from producto where idProducto = ?";
+		String sql = "UPDATE producto SET eliminado = 'Si' WHERE idProducto = ? and eliminado = 'No'";
 		pstm = con.prepareStatement(sql);
 		pstm.setInt(1,id);
 		estado = pstm.executeUpdate();
@@ -119,6 +120,7 @@ public class GestionProductoDAO implements ProductoInterfazDAO{
 				p.setCantidad(res.getInt(3));
 				p.setPrecio(res.getDouble(4));
 				p.setDes_categoria(res.getString(5));
+				p.setDes_proveedor(res.getString(6));
 				listarId.add(p);
 			}
 		} catch (Exception e) {
@@ -220,7 +222,7 @@ public class GestionProductoDAO implements ProductoInterfazDAO{
 		ResultSet res=null;
 		try {
 			con = MySQLConexion8.getConexion();
-			String sql = "select * from bdtienda.producto where nombre = ?";
+			String sql = "select * from bdtienda.producto where nombre = ? and eliminado = 'No'";
 			pstm = con.prepareStatement(sql);
 			pstm.setString(1,nomPro);
 			res = pstm.executeQuery();
@@ -233,6 +235,7 @@ public class GestionProductoDAO implements ProductoInterfazDAO{
 				p.setPrecio(res.getDouble(4));
 				p.setDes_categoria(res.getString(5));
 				p.setDes_proveedor(res.getString(6));
+				p.setEliminado(res.getString(7));
 				listar.add(p);
 			}
 		} catch (Exception e) {

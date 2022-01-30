@@ -7,7 +7,10 @@ public class Cliente {
 	private String dni;
 	private String telefono;
 	private String correo;
+	private String eliminado;
 	
+	
+
 	public Cliente() {
 		
 	}
@@ -58,6 +61,13 @@ public class Cliente {
 
 	public void setCorreo(String correo) {
 		this.correo = correo;
+	}
+	public String getEliminado() {
+		return eliminado;
+	}
+
+	public void setEliminado(String eliminado) {
+		this.eliminado = eliminado;
 	}
 	
 }//
